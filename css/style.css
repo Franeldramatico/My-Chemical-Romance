@@ -1,0 +1,822 @@
+/* ── RESET & VARS ─────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --red:#c8001a;
+  --red-bright:#ff0028;
+  --red-glow:rgba(255,0,40,.25);
+  --red-dim:rgba(200,0,26,.55);
+  --red-faint:rgba(200,0,26,.18);
+  --cream:#e8dec5;
+  --cream-mid:rgba(232,222,197,.7);
+  --cream-dim:rgba(232,222,197,.35);
+  --ink:#08040c;
+  --ink2:#0f091a;
+  --ink3:#150b24;
+  --ink4:#200d22;
+  --border:rgba(200,0,26,.3);
+  --tt:'Cinzel Decorative',serif;
+  --ti:'IM Fell English',serif;
+  --tc:'Cormorant Garamond',serif;
+  --tm:'Special Elite',monospace;
+  --bg-pattern: url('../assets/images/gothic-pattern.png');
+}
+html{scroll-behavior:smooth}
+body{background:var(--ink);color:var(--cream);font-family:var(--tc);overflow-x:hidden;cursor:none;-webkit-font-smoothing:antialiased}
+
+/* ── CURSOR ──────────────────────────────────────────────── */
+#cr,#cd{position:fixed;pointer-events:none;z-index:9999;transform:translate(-50%,-50%)}
+#cr{width:34px;height:34px;border:1px solid rgba(168,0,26,.35);border-radius:50%;transition:width .35s,height .35s,border-color .35s,background .35s}
+#cd{width:5px;height:5px;background:var(--red-bright);border-radius:50%;box-shadow:0 0 10px var(--red-bright),0 0 20px rgba(223,0,32,.4)}
+body.hovering #cr{width:50px;height:50px;border-color:var(--red-bright);background:rgba(168,0,26,.06)}
+
+/* ── FIXED OVERLAYS ──────────────────────────────────────── */
+#vignette{position:fixed;inset:0;z-index:900;pointer-events:none;background:radial-gradient(ellipse 75% 75% at 50% 50%,transparent 20%,rgba(0,0,0,.96) 100%)}
+#scanlines{position:fixed;inset:0;z-index:901;pointer-events:none;opacity:.01;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,1) 3px,rgba(0,0,0,1) 4px)}
+#grain{position:fixed;inset:0;width:100%;height:100%;z-index:902;pointer-events:none;opacity:.02;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+#bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
+
+/* ── SIDE WHISPERS ───────────────────────────────────────── */
+.whisper{position:fixed;top:50%;transform:translateY(-50%);writing-mode:vertical-rl;font-family:var(--tm);font-size:7px;letter-spacing:9px;text-transform:uppercase;color:rgba(168,0,26,.12);z-index:5;pointer-events:none;white-space:nowrap}
+
+/* ── GHOST LYRICS ────────────────────────────────────────── */
+.ghost{position:fixed;pointer-events:none;font-family:var(--tm);font-size:8px;color:var(--red-bright);z-index:30;white-space:nowrap;opacity:0;text-transform:uppercase;letter-spacing:3px;text-shadow:0 0 12px var(--red-glow)}
+
+/* ── PLAYER ──────────────────────────────────────────────── */
+#player{
+  position:fixed;bottom:26px;right:26px;z-index:800;
+  display:flex;align-items:center;gap:14px;
+  padding:11px 22px;
+  background:rgba(4,2,8,.96);
+  border:1px solid rgba(168,0,26,.28);
+  backdrop-filter:blur(20px);
+  transition:border-color .4s;
+}
+#player::before{content:'';position:absolute;inset:5px;border:1px solid rgba(168,0,26,.07);pointer-events:none}
+#player:hover{border-color:rgba(168,0,26,.5)}
+.p-dot{width:6px;height:6px;background:var(--red-bright);border-radius:50%;flex-shrink:0;box-shadow:0 0 0 0 rgba(223,0,32,.5);animation:pdot 2.5s ease-in-out infinite}
+@keyframes pdot{0%,100%{box-shadow:0 0 0 0 rgba(223,0,32,.5);opacity:1}60%{box-shadow:0 0 0 7px rgba(223,0,32,0);opacity:.4}}
+.p-lbl{font-family:var(--tm);font-size:8px;letter-spacing:3px;text-transform:uppercase;color:rgba(216,205,181,.35)}
+.p-waveform{display:flex;align-items:center;gap:2px;height:12px}
+.p-bar{width:2px;border-radius:1px;background:var(--red-dim);animation:wvf 1.2s ease-in-out infinite}
+.p-bar:nth-child(1){animation-delay:0s;height:4px}
+.p-bar:nth-child(2){animation-delay:.15s;height:8px}
+.p-bar:nth-child(3){animation-delay:.3s;height:12px}
+.p-bar:nth-child(4){animation-delay:.45s;height:7px}
+.p-bar:nth-child(5){animation-delay:.6s;height:5px}
+@keyframes wvf{0%,100%{transform:scaleY(.4)}50%{transform:scaleY(1)}}
+
+/* ── MAIN LAYOUT ──────────────────────────────────────────── */
+main{position:relative;z-index:10}
+section{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:7rem 2rem;position:relative;overflow:hidden}
+
+/* ═══════════════════════════════════════════════════════════
+   SECTION 1 — HERO
+   ═══════════════════════════════════════════════════════════ */
+#hero{
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+  background: 
+    linear-gradient(to bottom, rgba(4,2,8,0.7), var(--ink)),
+    url('../assets/images/1.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+/* Rotating sigil */
+#sigil{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+#sigil svg{width:min(88vw,660px);opacity:.05;animation:spinSig 80s linear infinite;will-change:transform}
+@keyframes spinSig{to{transform:rotate(360deg)}}
+
+/* Red atmospheric bloom behind title */
+.hero-bloom{position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(168,0,26,.12) 0%,transparent 70%);pointer-events:none;top:50%;left:50%;transform:translate(-50%,-50%);animation:bloom 6s ease-in-out infinite}
+@keyframes bloom{0%,100%{opacity:.6;transform:translate(-50%,-50%) scale(1)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}}
+
+.hero-eye{font-family:var(--tm);font-size:9px;letter-spacing:9px;text-transform:uppercase;color:var(--red-bright);opacity:0;margin-bottom:4rem;z-index:1;position:relative;display:flex;align-items:center;gap:1.5rem}
+.hero-eye::before,.hero-eye::after{content:'';width:40px;height:1px;background:linear-gradient(to right,transparent,var(--red-dim),transparent)}
+
+/* Title block with corner brackets */
+.hero-block{position:relative;padding:3rem 5.5rem;z-index:1;opacity:0}
+.hc{position:absolute;width:55px;height:55px;border-color:rgba(168,0,26,.38);border-style:solid;transition:all 1s ease}
+.hc.tl{top:0;left:0;border-width:1px 0 0 1px}
+.hc.tr{top:0;right:0;border-width:1px 1px 0 0}
+.hc.bl{bottom:0;left:0;border-width:0 0 1px 1px}
+.hc.br{bottom:0;right:0;border-width:0 1px 1px 0}
+.hero-block:hover .hc{width:70px;height:70px;border-color:rgba(168,0,26,.65)}
+
+/* Main glitch title */
+.hD{font-family:var(--tt);font-size:clamp(4rem,10.5vw,9.5rem);font-weight:400;line-height:.88;color:var(--cream);display:block;letter-spacing:.03em;position:relative}
+.hD::before,.hD::after{content:attr(data-text);position:absolute;top:0;left:0;width:100%;font-family:var(--tt);font-size:inherit;font-weight:inherit;line-height:inherit;letter-spacing:inherit;opacity:0}
+.hD::before{color:var(--red-bright);animation:gA 8s infinite steps(1);clip-path:polygon(0 12%,100% 12%,100% 36%,0 36%)}
+.hD::after{color:#1a4fff;animation:gB 8s .08s infinite steps(1);clip-path:polygon(0 64%,100% 64%,100% 84%,0 84%)}
+@keyframes gA{0%,90%,100%{opacity:0;transform:none}91%{opacity:.8;transform:translate(-4px,2px)}95%{opacity:.8;transform:translate(3px,-1px)}99%{opacity:0}}
+@keyframes gB{0%,90%,100%{opacity:0;transform:none}92%{opacity:.55;transform:translate(4px,2px)}96%{opacity:.55;transform:translate(-3px,0)}99%{opacity:0}}
+
+.hL{font-family:var(--ti);font-style:italic;font-size:clamp(3.6rem,9.5vw,9rem);line-height:1;color:var(--red-bright);display:block;text-shadow:0 0 50px rgba(223,0,32,.4),0 0 120px rgba(223,0,32,.12);margin-top:-.06em;letter-spacing:.01em}
+
+.hero-sub{z-index:1;position:relative;margin-top:1rem;opacity:0;display:flex;align-items:center;gap:2rem}
+.hero-sub span{font-family:var(--tm);font-size:8px;letter-spacing:6px;text-transform:uppercase;color:rgba(168,0,26,.6)}
+.hero-sub::before,.hero-sub::after{content:'';width:50px;height:1px;background:linear-gradient(to right,transparent,var(--red-dim),transparent)}
+
+.hero-q{font-family:var(--ti);font-style:italic;font-size:clamp(1rem,2.2vw,1.45rem);font-weight:300;color:rgba(216,205,181,.35);opacity:0;margin-top:3rem;z-index:1;position:relative;max-width:560px;line-height:1.6}
+
+.hero-sc{margin-top:4.5rem;display:flex;flex-direction:column;align-items:center;gap:10px;opacity:0;z-index:1;position:relative}
+.hero-sc span{font-family:var(--tm);font-size:7px;letter-spacing:6px;text-transform:uppercase;color:rgba(168,0,26,.4)}
+.sc-bar{width:1px;height:80px;background:linear-gradient(to bottom,var(--red-bright),transparent);animation:scP 2.4s ease-in-out infinite}
+@keyframes scP{0%,100%{opacity:.2;transform:scaleY(.25);transform-origin:top}50%{opacity:1;transform:scaleY(1);transform-origin:top}}
+
+/* ═══════════════════════════════════════════════════════════
+   SECTION 2 — MANIFESTO
+   ═══════════════════════════════════════════════════════════ */
+#manifesto{background:linear-gradient(180deg,var(--ink) 0%,var(--ink2) 50%,var(--ink) 100%)}
+.mf{max-width:920px;width:100%;position:relative}
+.mf-XX{
+  position:absolute;right:-3rem;top:-4rem;
+  font-family:var(--tt);font-size:clamp(10rem,20vw,18rem);font-weight:700;
+  color:transparent;-webkit-text-stroke:1px rgba(168,0,26,.06);
+  pointer-events:none;line-height:1;user-select:none;letter-spacing:-.02em;
+}
+.mf-tag{font-family:var(--tm);font-size:8px;letter-spacing:7px;text-transform:uppercase;color:var(--red-bright);margin-bottom:2rem;display:flex;align-items:center;gap:1.2rem;opacity:.85}
+.mf-tag::after{content:'';flex:1;max-width:160px;height:1px;background:linear-gradient(to right,var(--red-dim),transparent)}
+.mf-h{font-family:var(--tt);font-size:clamp(2.1rem,4.2vw,3.8rem);font-weight:400;color:var(--cream);line-height:1.1;margin-bottom:3rem}
+.mf-h em{font-style:italic;font-family:var(--ti);color:var(--red-bright);font-size:1.18em;text-shadow:0 0 35px rgba(223,0,32,.28);display:block;margin-top:.1em}
+.mf-body{font-family:var(--tc);font-size:clamp(1.1rem,1.8vw,1.28rem);font-weight:400;line-height:2.05;color:rgba(216,205,181,.9);max-width:680px}
+.mf-body+.mf-body{margin-top:1.6rem}
+.mf-rule{width:90px;height:1px;background:linear-gradient(to right,var(--red-dim),transparent);margin:3rem 0}
+.mf-meta{font-family:var(--tm);font-size:8px;letter-spacing:5px;text-transform:uppercase;color:rgba(216,205,181,.2)}
+
+/* ═══════════════════════════════════════════════════════════
+   SECTION 3 — PORTRAIT (full SVG)
+   ═══════════════════════════════════════════════════════════ */
+#portrait{
+  background: var(--bg-pattern);
+  background-blend-mode: multiply;
+  background-color: var(--ink2);
+  padding:0;
+  min-height:auto;
+  overflow:visible;
+}
+.pg{display:grid;grid-template-columns:1fr 1fr;width:100%;min-height:100vh}
+@media(max-width:780px){.pg{grid-template-columns:1fr}}
+.pl{position:relative;overflow:hidden;background:var(--ink);display:flex;align-items:stretch}
+/* Red light bleed from right */
+.pl::after{content:'';position:absolute;right:0;top:0;bottom:0;width:1px;background:linear-gradient(to bottom,transparent 10%,var(--red-dim) 50%,transparent 90%)}
+/* Atmospheric bloom behind SVG */
+.pl-bloom{position:absolute;width:400px;height:600px;left:50%;top:50%;transform:translate(-50%,-50%);background:radial-gradient(ellipse at 50% 40%,rgba(168,0,26,.1) 0%,transparent 65%);pointer-events:none}
+.pl-inner{position:relative;width:100%;display:flex;align-items:center;justify-content:center;padding:5rem 4rem;z-index:1}
+.pl-inner svg{width:100%;max-width:390px;height:auto;filter:drop-shadow(0 0 50px rgba(168,0,26,.18))}
+
+.pr{display:flex;flex-direction:column;justify-content:center;padding:6rem 5rem 6rem 4rem;background:linear-gradient(135deg,var(--ink2) 0%,var(--ink3) 100%);position:relative}
+.pr::before{content:'';position:absolute;left:0;top:10%;bottom:10%;width:1px;background:linear-gradient(to bottom,transparent,var(--red-faint),transparent)}
+.pr-kick{font-family:var(--tm);font-size:8px;letter-spacing:7px;text-transform:uppercase;color:var(--red-bright);margin-bottom:2rem;opacity:.75}
+.pr-h{font-family:var(--tt);font-size:clamp(2rem,3.5vw,3.1rem);font-weight:400;color:var(--cream);line-height:1.15;margin-bottom:.5em}
+.pr-h em{font-family:var(--ti);font-style:italic;color:var(--red-bright);text-shadow:0 0 28px rgba(223,0,32,.3);display:block;font-size:1.1em;margin-top:.08em}
+.pr-p{font-size:clamp(1.05rem,1.6vw,1.22rem);font-weight:400;line-height:2.1;color:rgba(216,205,181,.85);margin-bottom:1.6rem}
+.pr-rule{width:60px;height:1px;background:linear-gradient(to right,var(--red-dim),transparent);margin:2.5rem 0}
+.pr-sig{font-family:var(--ti);font-style:italic;font-size:1.55rem;color:rgba(216,205,181,.26);line-height:1.5}
+
+/* ═══════════════════════════════════════════════════════════
+   SECTION 4 — TRACKS
+   ═══════════════════════════════════════════════════════════ */
+#tracks{flex-direction:column;gap:5rem;background:var(--ink)}
+.tracks-h{text-align:center}
+.tracks-title{font-family:var(--tt);font-size:clamp(1.6rem,3.2vw,2.6rem);font-weight:400;color:var(--cream)}
+.tracks-title em{font-family:var(--ti);font-style:italic;color:var(--red-bright)}
+.tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;max-width:1100px;width:100%;background:var(--border);border:1px solid var(--border)}
+@media(max-width:900px){.tgrid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:550px){.tgrid{grid-template-columns:1fr}}
+.tc{
+  background:var(--ink);padding:2.6rem 2.2rem;position:relative;overflow:hidden;
+  cursor:default;transition:background .6s;
+}
+.tc::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(168,0,26,.07) 0%,transparent 55%);opacity:0;transition:opacity .5s}
+.tc:hover{background:var(--ink2)}
+.tc:hover::after{opacity:1}
+.tc-n{font-family:var(--tt);font-size:2.8rem;font-weight:400;color:rgba(168,0,26,.1);line-height:1;margin-bottom:.5rem;transition:color .5s}
+.tc:hover .tc-n{color:rgba(223,0,32,.25)}
+.tc-name{font-family:var(--ti);font-style:italic;font-size:1.3rem;color:var(--cream);margin-bottom:.35rem;line-height:1.2;transition:color .4s}
+.tc:hover .tc-name{color:#fff}
+.tc-alb{font-family:var(--tm);font-size:7px;letter-spacing:3.5px;text-transform:uppercase;color:rgba(216,205,181,.2);transition:color .4s}
+.tc:hover .tc-alb{color:rgba(216,205,181,.38)}
+.tc-bar{position:absolute;bottom:0;left:0;width:0;height:1px;background:linear-gradient(to right,var(--red-bright),var(--red));transition:width .65s cubic-bezier(.16,1,.3,1);box-shadow:0 0 8px var(--red-glow)}
+.tc:hover .tc-bar{width:100%}
+
+/* ═══════════════════════════════════════════════════════════
+   SECTION 5 — POEM GENERATOR
+   ═══════════════════════════════════════════════════════════ */
+#generator{flex-direction:column;gap:5.5rem;background:linear-gradient(180deg,var(--ink) 0%,var(--ink3) 100%)}
+.gen-h{text-align:center;display:flex;flex-direction:column;align-items:center;gap:1.2rem}
+.gen-eye{font-family:var(--tm);font-size:8px;letter-spacing:8px;text-transform:uppercase;color:var(--red-bright);opacity:.65}
+.gen-title{font-family:var(--tt);font-size:clamp(1.9rem,3.8vw,3rem);font-weight:400;color:var(--cream);line-height:1.15}
+.gen-title em{font-family:var(--ti);font-style:italic;color:var(--red-bright)}
+.gen-sub{font-family:var(--ti);font-style:italic;font-size:1.1rem;color:var(--cream-mid)}
+
+/* Poem stage */
+.pstage{
+  position:relative;width:100%;max-width:840px;
+  cursor:pointer;padding:5.5rem 4.5rem;
+  display:flex;flex-direction:column;align-items:center;gap:2.5rem;
+  transition:transform .5s cubic-bezier(.34,1.56,.64,1);
+}
+.pstage:active{transform:scale(.975)}
+/* 3-layer ornamental border */
+.pstage .b1,.pstage .b2,.pstage .b3{position:absolute;pointer-events:none;transition:all .7s ease}
+.pstage .b1{inset:0;border:1px solid rgba(168,0,26,.22)}
+.pstage .b2{inset:12px;border:1px solid rgba(168,0,26,.1)}
+.pstage .b3{inset:22px;border:1px solid rgba(168,0,26,.05)}
+.pstage:hover .b1{border-color:rgba(223,0,32,.55);box-shadow:inset 0 0 80px rgba(168,0,26,.06),0 0 40px rgba(168,0,26,.06)}
+.pstage:hover .b2{border-color:rgba(223,0,32,.22)}
+.pstage:hover .b3{border-color:rgba(223,0,32,.1)}
+/* Glow radial inside */
+.pstage-glow{position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(168,0,26,.08) 0%,transparent 68%);opacity:0;transition:opacity 1s;pointer-events:none}
+.pstage:hover .pstage-glow{opacity:1}
+/* Gothic glyph corners */
+.pg-glyph{position:absolute;font-family:var(--ti);font-size:2rem;color:rgba(168,0,26,.3);line-height:1;transition:color .5s,transform .6s cubic-bezier(.34,1.56,.64,1)}
+.pstage:hover .pg-glyph{color:rgba(223,0,32,.7)}
+.pg-glyph.tl{top:10px;left:18px}
+.pg-glyph.tr{top:10px;right:18px}
+.pg-glyph.bl{bottom:10px;left:18px;transform:rotate(180deg)}
+.pg-glyph.br{bottom:10px;right:18px;transform:rotate(180deg)}
+.pstage:hover .pg-glyph.tl{transform:translate(-3px,-3px)}
+.pstage:hover .pg-glyph.tr{transform:translate(3px,-3px)}
+.pstage:hover .pg-glyph.bl{transform:rotate(180deg) translate(-3px,-3px)}
+.pstage:hover .pg-glyph.br{transform:rotate(180deg) translate(3px,-3px)}
+
+#poem-text{font-family:var(--ti);font-style:italic;font-size:clamp(1.8rem,3.8vw,3rem);color:var(--cream);text-align:center;line-height:1.5;position:relative;z-index:1;transition:text-shadow .5s}
+.pstage:hover #poem-text{text-shadow:0 0 40px rgba(216,205,181,.08)}
+.ps-cta{font-family:var(--tm);font-size:8px;letter-spacing:5px;text-transform:uppercase;color:var(--red-bright);opacity:.25;position:relative;z-index:1;transition:opacity .5s;display:flex;align-items:center;gap:1.2rem}
+.ps-cta::before,.ps-cta::after{content:'';height:1px;background:linear-gradient(to right,transparent,var(--red-dim));transition:width .6s cubic-bezier(.16,1,.3,1);width:16px}
+.pstage:hover .ps-cta{opacity:.85}
+.pstage:hover .ps-cta::before,.pstage:hover .ps-cta::after{width:55px}
+
+/* ═══════════════════════════════════════════════════════════
+   SECTION 6 — ORACLE / ALTAR
+   ═══════════════════════════════════════════════════════════ */
+#altar{flex-direction:column;gap:4.5rem;background:var(--ink);padding-top:8rem;padding-bottom:8rem}
+.altar-inner{display:flex;flex-direction:column;align-items:center;gap:3.5rem;max-width:580px;text-align:center}
+.altar-h{font-family:var(--tt);font-size:clamp(1.7rem,3.2vw,2.5rem);font-weight:400;color:var(--cream)}
+.altar-h em{font-family:var(--ti);font-style:italic;color:var(--red-bright)}
+.altar-sub{font-family:var(--ti);font-style:italic;font-size:1.15rem;color:rgba(216,205,181,.8);line-height:1.8;max-width:420px}
+
+/* Rose oracle widget */
+.rose-w{position:relative;width:170px;height:170px;cursor:pointer;flex-shrink:0}
+.rose-w svg{width:100%;height:100%;overflow:visible;transition:filter .8s}
+.rose-w:hover svg{filter:drop-shadow(0 0 25px rgba(168,0,26,.4)) drop-shadow(0 0 60px rgba(168,0,26,.15))}
+.rose-halo{position:absolute;inset:-50px;border-radius:50%;background:radial-gradient(circle,rgba(168,0,26,.22) 0%,transparent 70%);opacity:0;transition:opacity 1.5s;pointer-events:none}
+.rose-w:hover .rose-halo{opacity:1}
+/* Orbit ring around rose */
+.rose-orbit{position:absolute;inset:-20px;border-radius:50%;border:1px solid rgba(168,0,26,.12);animation:orbitR 12s linear infinite}
+.rose-orbit2{position:absolute;inset:-35px;border-radius:50%;border:1px dashed rgba(168,0,26,.07);animation:orbitR 20s linear infinite reverse}
+@keyframes orbitR{to{transform:rotate(360deg)}}
+
+#oracle-r{
+  font-family:var(--tm);font-size:11px;letter-spacing:6px;
+  text-transform:uppercase;color:var(--red-bright);
+  text-align:center;max-width:420px;min-height:22px;
+  opacity:0;transition:opacity .9s;
+  text-shadow:0 0 25px rgba(223,0,32,.65),0 0 60px rgba(223,0,32,.2);
+  line-height:1.9;
+}
+#oracle-r.show{opacity:1}
+
+#oracle-btn{
+  background:none;border:1px solid rgba(168,0,26,.3);
+  color:rgba(216,205,181,.38);
+  font-family:var(--tm);font-size:9px;letter-spacing:7px;text-transform:uppercase;
+  padding:17px 52px;cursor:pointer;position:relative;overflow:hidden;
+  transition:color .45s,border-color .45s,letter-spacing .4s;
+}
+#oracle-btn span{position:relative;z-index:1}
+#oracle-btn::before{content:'';position:absolute;inset:0;background:var(--red);transform:translateX(-101%);transition:transform .55s cubic-bezier(.16,1,.3,1)}
+#oracle-btn:hover{color:var(--cream);border-color:var(--red);letter-spacing:8px}
+#oracle-btn:hover::before{transform:translateX(0)}
+
+/* ═══════════════════════════════════════════════════════════
+   SECTION 7 — BIRTHDAY FINALE
+   ═══════════════════════════════════════════════════════════ */
+#finale{
+  flex-direction:column;text-align:center;gap:3.5rem;
+  background:var(--ink);position:relative;overflow:hidden;
+  padding-top:10rem;padding-bottom:10rem;
+}
+#finale-bg{position:absolute;inset:0;pointer-events:none;z-index:0}
+/* Animated red aurora at bottom */
+.aurora{
+  position:absolute;bottom:-100px;left:50%;transform:translateX(-50%);
+  width:120%;height:400px;
+  background:radial-gradient(ellipse at 50% 100%,rgba(168,0,26,.18) 0%,rgba(168,0,26,.06) 40%,transparent 70%);
+  animation:aur 8s ease-in-out infinite;
+}
+@keyframes aur{0%,100%{opacity:.6;transform:translateX(-50%) scaleX(.9)}50%{opacity:1;transform:translateX(-50%) scaleX(1.08)}}
+
+.fn-eye{font-family:var(--tm);font-size:9px;letter-spacing:9px;text-transform:uppercase;color:var(--red-bright);opacity:.55;position:relative;z-index:1}
+.fn-title{
+  font-family:var(--tt);font-size:clamp(1.7rem,4.5vw,3.5rem);
+  font-weight:400;color:var(--cream);line-height:1.2;
+  position:relative;z-index:1;max-width:750px;
+}
+.fn-title em{
+  font-family:var(--ti);font-style:italic;
+  color:var(--red-bright);display:block;font-size:1.3em;
+  text-shadow:0 0 60px rgba(223,0,32,.5),0 0 120px rgba(223,0,32,.15);
+  margin-top:.1em;animation:titlePulse 4s ease-in-out infinite;
+}
+@keyframes titlePulse{0%,100%{text-shadow:0 0 60px rgba(223,0,32,.5),0 0 120px rgba(223,0,32,.15)}50%{text-shadow:0 0 80px rgba(223,0,32,.7),0 0 160px rgba(223,0,32,.25)}}
+.fn-body{
+  font-family:var(--ti);font-style:italic;
+  font-size:clamp(1.1rem,2vw,1.5rem);
+  color:rgba(216,205,181,.9);max-width:600px;line-height:1.95;
+  position:relative;z-index:1;
+}
+.fn-div{display:flex;align-items:center;gap:2rem;position:relative;z-index:1;width:100%;max-width:420px;justify-content:center}
+.fn-div::before,.fn-div::after{content:'';flex:1;height:1px;background:linear-gradient(to right,transparent,var(--red-dim),transparent)}
+.fn-icon{font-size:1.3rem;color:var(--red-bright);opacity:.7;text-shadow:0 0 15px var(--red-glow)}
+.fn-from{font-family:var(--tm);font-size:8px;letter-spacing:6px;text-transform:uppercase;color:rgba(216,205,181,.16);position:relative;z-index:1}
+
+/* ── FOOTER ──────────────────────────────────────────────── */
+footer{position:relative;z-index:10;padding:4rem 2rem;text-align:center;border-top:1px solid rgba(168,0,26,.08)}
+.ft{font-family:var(--tm);font-size:7px;letter-spacing:7px;text-transform:uppercase;color:rgba(216,205,181,.12)}
+.fh{color:var(--red);opacity:.28;display:block;margin-top:1rem;font-size:13px}
+
+/* ── HELPERS ──────────────────────────────────────────────── */
+.fu{opacity:0;transform:translateY(38px);will-change: opacity, transform;}
+.orn{display:flex;align-items:center;gap:1.5rem;width:100%;max-width:280px;margin:0 auto}
+.orn::before,.orn::after{content:'';flex:1;height:1px;background:linear-gradient(to right,transparent,var(--red-dim),transparent)}
+.orn span{color:var(--red-bright);font-size:1rem;opacity:.55;text-shadow:0 0 10px var(--red-glow)}
+
+/* ═══════════════════════════════════════════════════════════
+   ▓▓▓  NEW GOTHIC ANIMATION LAYER — ADDED ON TOP  ▓▓▓
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── INTRO CURTAIN ─── */
+#curtain{
+  position:fixed;inset:0;z-index:9000;
+  background:var(--ink);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2rem;
+  pointer-events:all;
+}
+#curtain-cross{
+  width:60px;height:60px;position:relative;
+  animation:curtainCross 1.8s ease-out forwards;
+}
+#curtain-cross::before,#curtain-cross::after{
+  content:'';position:absolute;background:var(--red-bright);border-radius:1px;
+}
+#curtain-cross::before{width:1px;height:100%;left:50%;transform:translateX(-50%);
+  box-shadow:0 0 20px var(--red-bright),0 0 60px rgba(223,0,32,.4)}
+#curtain-cross::after{height:1px;width:100%;top:50%;transform:translateY(-50%);
+  box-shadow:0 0 20px var(--red-bright),0 0 60px rgba(223,0,32,.4)}
+@keyframes curtainCross{0%{opacity:0;transform:scale(.3) rotate(45deg)}60%{opacity:1;transform:scale(1.1) rotate(0deg)}100%{opacity:1;transform:scale(1) rotate(0deg)}}
+#curtain-text{
+  font-family:var(--tm);font-size:9px;letter-spacing:8px;text-transform:uppercase;
+  color:rgba(168,0,26,.7);animation:curtainTxt 2.5s ease-out forwards;
+}
+@keyframes curtainTxt{0%,40%{opacity:0}70%{opacity:1}100%{opacity:1}}
+#curtain-enter{
+  background:none;border:1px solid rgba(168,0,26,.4);
+  color:rgba(216,205,181,.5);
+  font-family:var(--tm);font-size:9px;letter-spacing:6px;text-transform:uppercase;
+  padding:14px 40px;cursor:pointer;
+  animation:curtainBtn 3s ease-out forwards;
+  position:relative;overflow:hidden;transition:color .4s,border-color .4s;
+}
+#curtain-enter::before{content:'';position:absolute;inset:0;background:var(--red);transform:translateX(-101%);transition:transform .5s cubic-bezier(.16,1,.3,1)}
+#curtain-enter:hover{color:var(--cream);border-color:var(--red)}
+#curtain-enter:hover::before{transform:translateX(0)}
+#curtain-enter span{position:relative;z-index:1}
+@keyframes curtainBtn{0%,60%{opacity:0;transform:translateY(10px)}90%{opacity:1;transform:translateY(0)}100%{opacity:1;transform:translateY(0)}}
+
+/* ── BLOOD DRIP SVG ─── */
+#blood-drip-layer{
+  position:fixed;top:0;left:0;width:100%;height:80px;
+  z-index:903;pointer-events:none;overflow:visible;
+}
+.drip-path{stroke:none;fill:var(--red)}
+
+.blood-drip-divider{
+  width:100%;height:auto;max-height:100px;
+  display:block;margin:0;pointer-events:none;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+}
+
+.blood-splatter{
+  position:absolute;width:250px;height:250px;
+  background:radial-gradient(circle,rgba(112,0,0,.4) 0%,rgba(70,0,0,.6) 40%,transparent 75%);
+  filter:blur(30px);pointer-events:none;z-index:0;
+  mix-blend-mode:multiply;
+  will-change: opacity, transform;
+}
+.blood-splatter::before{
+  content:'';position:absolute;inset:25%;border-radius:50%;
+  background:rgba(255,255,255,0.05);filter:blur(10px);
+}
+
+/* ── MIST / FOG CANVAS ─── */
+#mist-canvas{
+  position:fixed;inset:0;z-index:2;pointer-events:none;
+  opacity:.55;mix-blend-mode:screen;
+}
+
+/* ── CANDLE FLICKER on portrait SVG ─── */
+@keyframes flickerL{
+  0%,100%{opacity:.9;transform:scaleX(1) scaleY(1) translateX(0)}
+  20%{opacity:.7;transform:scaleX(.9) scaleY(1.1) translateX(-1px)}
+  40%{opacity:1;transform:scaleX(1.05) scaleY(.95) translateX(1px)}
+  60%{opacity:.8;transform:scaleX(.95) scaleY(1.08) translateX(0)}
+  80%{opacity:.95;transform:scaleX(1.02) scaleY(.98) translateX(-1px)}
+}
+.candle-flame-l{animation:flickerL 2.3s ease-in-out infinite;transform-origin:bottom center}
+.candle-flame-r{animation:flickerL 1.9s .4s ease-in-out infinite;transform-origin:bottom center}
+
+/* ── FLOATING RUNE RING ─── */
+#rune-ring{
+  position:fixed;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:min(100vw,100vh);height:min(100vw,100vh);
+  z-index:4;pointer-events:none;opacity:0;
+  transition:opacity 2s ease;
+}
+#rune-ring svg{width:100%;height:100%;animation:runeRot 40s linear infinite}
+@keyframes runeRot{to{transform:rotate(-360deg)}}
+body.site-active #rune-ring{opacity:.03}
+
+/* ── SECTION REVEAL WIPE ─── */
+.reveal-wipe{
+  position:relative;overflow:hidden;
+}
+.reveal-wipe::after{
+  content:'';position:absolute;inset:0;
+  background:var(--ink);
+  transform:translateX(0);
+  transition:transform 1.2s cubic-bezier(.77,0,.18,1);
+  z-index:2;
+}
+.reveal-wipe.wiped::after{transform:translateX(101%)}
+
+/* ── HEARTBEAT PULSE on .hL ─── */
+@keyframes heartbeat{
+  0%,100%{text-shadow:0 0 50px rgba(223,0,32,.4),0 0 120px rgba(223,0,32,.12)}
+  14%{text-shadow:0 0 80px rgba(223,0,32,.9),0 0 160px rgba(223,0,32,.4),0 0 240px rgba(223,0,32,.15)}
+  28%{text-shadow:0 0 50px rgba(223,0,32,.4),0 0 120px rgba(223,0,32,.12)}
+  42%{text-shadow:0 0 70px rgba(223,0,32,.7),0 0 140px rgba(223,0,32,.3)}
+  56%{text-shadow:0 0 50px rgba(223,0,32,.4),0 0 120px rgba(223,0,32,.12)}
+}
+.hL.beating{animation:heartbeat 1.6s ease-in-out infinite}
+
+/* ── TYPEWRITER CURSOR on eyebrow ─── */
+.hero-eye.typing::after{
+  content:'|';
+  color:var(--red-bright);
+  animation:blink .7s step-end infinite;
+  margin-left:4px;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* ── HORIZONTAL MARQUEE BAND ─── */
+#marquee-band{
+  position:fixed;bottom:0;left:0;right:0;z-index:799;
+  height:28px;background:rgba(4,2,8,.92);border-top:1px solid rgba(168,0,26,.15);
+  overflow:hidden;display:flex;align-items:center;
+}
+.marquee-track{
+  display:flex;gap:0;white-space:nowrap;
+  animation:marqueeScroll 30s linear infinite;
+  will-change:transform;
+}
+.marquee-track span{
+  font-family:var(--tm);font-size:7px;letter-spacing:5px;text-transform:uppercase;
+  color:rgba(168,0,26,.3);padding:0 3rem;
+}
+.marquee-track span.sep{color:rgba(168,0,26,.15);padding:0 .5rem;letter-spacing:0}
+@keyframes marqueeScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* ── SCROLL PROGRESS LINE ─── */
+#progress-line{
+  position:fixed;top:0;left:0;height:1px;z-index:910;
+  background:linear-gradient(to right,var(--red),var(--red-bright));
+  width:0%;transition:width .1s linear;
+  box-shadow:0 0 8px var(--red-bright),0 0 20px rgba(223,0,32,.3);
+}
+
+/* ── TRACK CARD HOVER GLOW ─── */
+.tc{
+  transition:background .6s,box-shadow .4s;
+}
+.tc:hover{
+  box-shadow:inset 0 0 40px rgba(168,0,26,.06),0 0 0 1px rgba(168,0,26,.18);
+}
+
+/* ── PORTRAIT SVG floating anim ─── */
+.pl-inner svg{
+  animation:svgFloat 8s ease-in-out infinite;
+}
+@keyframes svgFloat{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-12px)}
+}
+
+/* ── SIGIL second counter-ring ─── */
+#sigil .counter{
+  animation:counterSig 55s linear infinite reverse;
+  transform-origin:center;
+}
+@keyframes counterSig{to{transform:rotate(360deg)}}
+
+/* ── SECTION SECTION BACKGROUND SHIFT on scroll ─── */
+#manifesto{
+  background:linear-gradient(180deg,var(--ink) 0%,var(--ink2) 50%,var(--ink) 100%);
+  transition:background 1s ease;
+}
+
+/* ── ROSE BREATHING ─── */
+.rose-w svg{
+  animation:roseBreath 4s ease-in-out infinite;
+}
+@keyframes roseBreath{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.05)}
+}
+.rose-w:hover svg{
+  animation:none;
+  transform:scale(1.08);
+}
+
+/* ── FINALE STARS TWINKLING ─── */
+.star-twinkle{
+  position:absolute;border-radius:50%;background:#fff;
+  animation:twinkle var(--dur,3s) var(--del,0s) ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes twinkle{
+  0%,100%{opacity:0;transform:scale(.5)}
+  50%{opacity:var(--max-op,.3);transform:scale(1)}
+}
+
+/* ── MANIFESTO HOVER LETTER SHIMMER ─── */
+.mf-h{cursor:default}
+.shimmer-char{
+  display:inline;
+  transition:color .3s,text-shadow .3s;
+}
+.shimmer-char:hover{
+  color:var(--red-bright);
+  text-shadow:0 0 20px rgba(223,0,32,.5);
+}
+
+/* ── POEM TEXT CHARACTER REVEAL ─── */
+.char-reveal .char{
+  display:inline;
+  opacity:0;
+  animation:charIn .05s forwards;
+}
+@keyframes charIn{to{opacity:1}}
+
+/* ── BORDER BREATHING on pstage ─── */
+@keyframes borderBreath{
+  0%,100%{box-shadow:inset 0 0 30px rgba(168,0,26,.03),0 0 0 rgba(168,0,26,0)}
+  50%{box-shadow:inset 0 0 60px rgba(168,0,26,.08),0 0 30px rgba(168,0,26,.05)}
+}
+.pstage .b1{animation:borderBreath 5s ease-in-out infinite}
+
+/* ── TRACK CARD RIPPLE ─── */
+.tc-ripple{
+  position:absolute;border-radius:50%;
+  background:rgba(168,0,26,.15);
+  pointer-events:none;transform:scale(0);
+  animation:rippleOut .8s ease-out forwards;
+}
+@keyframes rippleOut{to{transform:scale(4);opacity:0}}
+
+/* ── WHISPERS extra fade animation ─── */
+.whisper{
+  animation:whisperPulse 6s ease-in-out infinite alternate;
+}
+.whisper:last-child{animation-delay:-3s}
+@keyframes whisperPulse{
+  0%{color:rgba(168,0,26,.08)}
+  100%{color:rgba(168,0,26,.2)}
+}
+
+/* ── HERO BLOCK subtle rotation on deep hover ─── */
+.hero-block{transition:transform .8s cubic-bezier(.34,1.56,.64,1)}
+.hero-block:hover{transform:scale(1.018)}
+
+/* ── SIGNATURE ANIMATE ─── */
+.pr-sig{
+  overflow:hidden;
+  border-right:1px solid transparent;
+}
+
+/* ── SECTION number watermarks ─── */
+.section-num{
+  position:absolute;
+  font-family:var(--tt);
+  font-size:clamp(8rem,15vw,14rem);
+  font-weight:700;
+  color:transparent;
+  -webkit-text-stroke:1px rgba(168,0,26,.04);
+  pointer-events:none;
+  user-select:none;
+  line-height:1;
+  right:2rem;bottom:2rem;
+  letter-spacing:-.02em;
+  text-shadow: 0 0 20px rgba(255,0,0,0.1);
+}
+
+/* ── CVN LEGACY SECTION ─── */
+#cvn-legacy{
+  background: var(--ink3);
+  flex-direction: column;
+  padding: 8rem 2rem;
+}
+.cvn-container{
+  display: flex; gap: 4rem; max-width: 1100px; width: 100%; align-items: center;
+}
+@media(max-width:900px){.cvn-container{flex-direction:column}}
+.cvn-info{ flex: 1; }
+.cvn-info h2{ font-family: var(--tt); font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 2rem; color: var(--cream); }
+.cvn-info h2 em{ font-family: var(--ti); color: var(--red-bright); }
+.cvn-info p{ font-size: 1.2rem; line-height: 1.8; color: var(--cream-mid); margin-bottom: 1.5rem; }
+.cvn-canvas-w{
+  width: 100%; max-width: 500px; height: 600px; background: #000; position: relative; 
+  border: 1px solid var(--red-dim); box-shadow: 0 0 40px rgba(0,0,0,0.5);
+}
+.cvn-canvas-w p { position: absolute; bottom: 10px; left: 0; width: 100%; text-align: center; font-size: 8px; color: var(--red-bright); letter-spacing: 2px; }
+#cvn-canvas { cursor: crosshair; }
+
+/* ── SPIDER & LOGOS ─── */
+.spider-crawl{
+  position: fixed; top: 10%; right: -20px; width: 120px; opacity: 0.4; z-index: 1000;
+  pointer-events: none; filter: invert(0.8) sepia(1) hue-rotate(-50deg) saturate(5);
+  animation: spiderSwing 10s ease-in-out infinite alternate;
+}
+@keyframes spiderSwing{
+  from{transform: translateY(0) rotate(5deg)}
+  to{transform: translateY(30px) rotate(-5deg)}
+}
+.mcr-side-logo{
+  position: fixed; left: 20px; bottom: 100px; width: 150px; opacity: 0.15; z-index: 999;
+  pointer-events: none; transform: rotate(-90deg); transform-origin: left bottom;
+}
+
+/* ── CHRONICLES SECTION ─── */
+#chronicles{
+  padding: 10rem 2rem; background: var(--ink2); position: relative; overflow: hidden;
+}
+.chron-grid{
+  display: flex; gap: 4rem; max-width: 1200px; margin: 0 auto; align-items: center;
+}
+@media(max-width:900px){.chron-grid{flex-direction:column-reverse}}
+.chron-img-w{
+  flex: 1; position: relative; padding: 20px; border: 1px solid var(--red-dim);
+  background: rgba(0,0,0,0.4);
+}
+.chron-img-w img{ width: 100%; display: block; filter: sepia(0.5) contrast(1.1); }
+.chron-content{ flex: 1; }
+.chron-content h2{ font-family: var(--tt); font-size: 3rem; color: var(--cream); margin-bottom: 2rem; }
+.chron-content p{ font-size: 1.1rem; line-height: 1.8; color: var(--cream-mid); margin-bottom: 1.5rem; }
+
+#poem-text{
+  font-family: var(--tm); font-size: clamp(1.2rem, 3vw, 2.2rem);
+  color: var(--cream); max-width: 85%; margin: 0 auto; line-height: 1.4;
+  text-shadow: 0 0 15px var(--red-glow);
+}
+
+/* ── ORACLE RESPONSE SHIMMER ─── */
+#oracle-r.show{
+  animation:oracleShimmer 3s ease-in-out infinite;
+}
+@keyframes oracleShimmer{
+  0%,100%{text-shadow:0 0 25px rgba(223,0,32,.65),0 0 60px rgba(223,0,32,.2)}
+  50%{text-shadow:0 0 40px rgba(223,0,32,.9),0 0 90px rgba(223,0,32,.35),0 0 130px rgba(223,0,32,.1)}
+}
+
+/* ── FINALE HEART THROB ─── */
+.fn-icon{
+  display:inline-block;
+  animation:heartThrob 1.4s ease-in-out infinite;
+}
+@keyframes heartThrob{
+  0%,100%{transform:scale(1)}
+  15%{transform:scale(1.35)}
+  30%{transform:scale(1)}
+  45%{transform:scale(1.2)}
+  60%{transform:scale(1)}
+}
+
+/* ── BLOOD CURSOR TRAIL ─── */
+.cursor-blood{
+  position:fixed;width:3px;height:3px;border-radius:50%;
+  background:var(--red-bright);pointer-events:none;z-index:9998;
+  box-shadow:0 0 6px var(--red-bright);
+  animation:bloodFade .8s ease-out forwards;
+}
+@keyframes bloodFade{
+  0%{opacity:.8;transform:translate(-50%,-50%) scale(1)}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(0) translateY(8px)}
+}
+/* ── NEW IMAGE DECORATIONS ─── */
+.deco-img{
+  position:absolute;z-index:1;pointer-events:none;opacity:.65;filter:grayscale(1) contrast(1.2);
+  transition:opacity .8s, filter .8s;
+  will-change: transform, opacity;
+}
+.tc:hover .deco-img{opacity:.4;filter:grayscale(0) contrast(1.1)}
+
+.skel-float{
+  width:280px;height:auto;
+  bottom:-20px;right:-40px;
+  animation:skelFloat 12s ease-in-out infinite;
+}
+@keyframes skelFloat{
+  0%,100%{transform:translateY(0) rotate(0deg)}
+  50%{transform:translateY(-25px) rotate(-5deg)}
+}
+
+.lovers-art{
+  max-width:450px;width:100%;height:auto;
+  mix-blend-mode:screen;opacity:.8;
+  filter: drop-shadow(0 0 30px rgba(168,0,26,.3));
+  will-change: filter, opacity;
+}
+
+.pattern-overlay{
+  position:absolute;inset:0;
+  background:var(--bg-pattern);
+  opacity:.03;pointer-events:none;z-index:0;
+}
+
+.spider-crawl{
+  position:fixed;width:60px;height:auto;
+  top:20px;left:20px;z-index:999;
+  opacity:0;transform:translateY(-20px);
+  transition:opacity 1.5s ease 1s, transform 1.5s ease 1s;
+  pointer-events:none;
+}
+body.site-active .spider-crawl{opacity:.8;transform:translateY(0)}
+.spider-crawl:hover{opacity:1;transform:scale(1.1)}
+
+.mcr-side-logo{
+  position:fixed;bottom:90px;left:20px;
+  width:100px;height:auto;z-index:800;
+  opacity:0;transform:translateY(20px);
+  transition:opacity 1.5s ease 1.2s, transform 1.5s ease 1.2s;
+  filter:drop-shadow(0 0 10px rgba(223,0,32,.8));
+  pointer-events:none;
+}
+body.site-active .mcr-side-logo{opacity:.8;transform:translateY(0)}
+
+/* ── STAMP ICONS (REPETITIVE USAGE) ─── */
+.goth-stamp{
+  position:absolute;width:32px;height:32px;opacity:.15;filter:invert(1) brightness(0.8);
+  pointer-events:none;z-index:1;
+}
+.goth-stamp.tl{top:20px;left:20px}
+.goth-stamp.tr{top:20px;right:20px}
+.goth-stamp.bl{bottom:20px;left:20px}
+.goth-stamp.br{bottom:20px;right:20px}
+
+/* ── RESPONSIVENESS ───────────────────────────────────────── */
+@media (max-width: 1024px) {
+  body { cursor: auto !important; }
+  #cr, #cd, .cursor-blood { display: none !important; }
+}
+
+@media (max-width: 768px) {
+  section { padding: 4rem 1.5rem; }
+  .whisper { display: none; }
+  .mcr-side-logo, .spider-crawl { display: none; }
+  
+  #sigil svg { width: 120vw; opacity: 0.03; }
+  .hero-block { padding: 2rem 1.5rem; }
+  .hc { width: 35px; height: 35px; }
+  
+  .pg { grid-template-columns: 1fr; }
+  .pl-inner { padding: 3rem 1rem; }
+  .pr { padding: 4rem 1.5rem; }
+  
+  .tgrid { gap: 10px; background: transparent; border: none; }
+  .tc { border: 1px solid var(--border); }
+  
+  .pstage { padding: 3rem 1.5rem; }
+  #poem-text { font-size: 1.8rem; }
+  
+  #player { 
+    left: 10px; right: 10px; bottom: 40px; 
+    justify-content: center; padding: 10px;
+    width: auto;
+  }
+  #marquee-band { display: none; }
+}
+
+@media (max-width: 480px) {
+  .hD { font-size: 3.5rem; }
+  .hL { font-size: 3rem; }
+  .hero-q { font-size: 0.9rem; }
+  .section-num { font-size: 5rem; bottom: 1rem; right: 1rem; }
+  .mf-XX { font-size: 8rem; right: -1rem; top: -2rem; }
+  .fn-title em { font-size: 1.1em; }
+}
+

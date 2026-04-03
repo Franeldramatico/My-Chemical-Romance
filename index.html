@@ -1,0 +1,1440 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demolition Lovers — Acto XXIV (2026)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=IM+Fell+English:ital@0;1&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Special+Elite&display=swap"
+    rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <link rel="icon" type="image/png" href="assets/images/icons8-goth-48.png">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    @keyframes twinkle {
+
+      0%,
+      100% {
+        opacity: 0;
+        transform: scale(.5)
+      }
+
+      50% {
+        opacity: var(--max-op, .3);
+        transform: scale(1)
+      }
+    }
+
+    /* ── MANIFESTO HOVER LETTER SHIMMER ─── */
+    .mf-h {
+      cursor: default
+    }
+
+    .shimmer-char {
+      display: inline;
+      transition: color .3s, text-shadow .3s;
+    }
+
+    .shimmer-char:hover {
+      color: var(--red-bright);
+      text-shadow: 0 0 20px rgba(223, 0, 32, .5);
+    }
+
+    /* ── POEM TEXT CHARACTER REVEAL ─── */
+    .char-reveal .char {
+      display: inline;
+      opacity: 0;
+      animation: charIn .05s forwards;
+    }
+
+    @keyframes charIn {
+      to {
+        opacity: 1
+      }
+    }
+
+    /* ── BORDER BREATHING on pstage ─── */
+    @keyframes borderBreath {
+
+      0%,
+      100% {
+        box-shadow: inset 0 0 30px rgba(168, 0, 26, .03), 0 0 0 rgba(168, 0, 26, 0)
+      }
+
+      50% {
+        box-shadow: inset 0 0 60px rgba(168, 0, 26, .08), 0 0 30px rgba(168, 0, 26, .05)
+      }
+    }
+
+    .pstage .b1 {
+      animation: borderBreath 5s ease-in-out infinite
+    }
+
+    /* ── TRACK CARD RIPPLE ─── */
+    .tc-ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(168, 0, 26, .15);
+      pointer-events: none;
+      transform: scale(0);
+      animation: rippleOut .8s ease-out forwards;
+    }
+
+    @keyframes rippleOut {
+      to {
+        transform: scale(4);
+        opacity: 0
+      }
+    }
+
+    /* ── WHISPERS extra fade animation ─── */
+    .whisper {
+      animation: whisperPulse 6s ease-in-out infinite alternate;
+    }
+
+    .whisper:last-child {
+      animation-delay: -3s
+    }
+
+    @keyframes whisperPulse {
+      0% {
+        color: rgba(168, 0, 26, .08)
+      }
+
+      100% {
+        color: rgba(168, 0, 26, .2)
+      }
+    }
+
+    /* ── HERO BLOCK subtle rotation on deep hover ─── */
+    .hero-block {
+      transition: transform .8s cubic-bezier(.34, 1.56, .64, 1)
+    }
+
+    .hero-block:hover {
+      transform: scale(1.018)
+    }
+
+    /* ── SIGNATURE ANIMATE ─── */
+    .pr-sig {
+      overflow: hidden;
+      border-right: 1px solid transparent;
+    }
+
+    /* ── SECTION number watermarks ─── */
+    .section-num {
+      position: absolute;
+      font-family: var(--tt);
+      font-size: clamp(8rem, 15vw, 14rem);
+      font-weight: 700;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(168, 0, 26, .04);
+      pointer-events: none;
+      user-select: none;
+      line-height: 1;
+      right: 2rem;
+      bottom: 2rem;
+      letter-spacing: -.02em;
+    }
+
+    /* ── ORACLE RESPONSE SHIMMER ─── */
+    #oracle-r.show {
+      animation: oracleShimmer 3s ease-in-out infinite;
+    }
+
+    @keyframes oracleShimmer {
+
+      0%,
+      100% {
+        text-shadow: 0 0 25px rgba(223, 0, 32, .65), 0 0 60px rgba(223, 0, 32, .2)
+      }
+
+      50% {
+        text-shadow: 0 0 40px rgba(223, 0, 32, .9), 0 0 90px rgba(223, 0, 32, .35), 0 0 130px rgba(223, 0, 32, .1)
+      }
+    }
+
+    /* ── FINALE HEART THROB ─── */
+    .fn-icon {
+      display: inline-block;
+      animation: heartThrob 1.4s ease-in-out infinite;
+    }
+
+    @keyframes heartThrob {
+
+      0%,
+      100% {
+        transform: scale(1)
+      }
+
+      15% {
+        transform: scale(1.35)
+      }
+
+      30% {
+        transform: scale(1)
+      }
+
+      45% {
+        transform: scale(1.2)
+      }
+
+      60% {
+        transform: scale(1)
+      }
+    }
+
+    /* ── BLOOD CURSOR TRAIL ─── */
+    .cursor-blood {
+      position: fixed;
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: var(--red-bright);
+      pointer-events: none;
+      z-index: 9998;
+      box-shadow: 0 0 6px var(--red-bright);
+      animation: bloodFade .8s ease-out forwards;
+    }
+
+    @keyframes bloodFade {
+      0% {
+        opacity: .8;
+        transform: translate(-50%, -50%) scale(1)
+      }
+
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0) translateY(8px)
+      }
+    }
+  </style>
+</head>
+
+<body class="site-inactive">
+
+  <img id="mcr-bg-logo" src="assets/images/mcrRojo.png" style="position:fixed; left: 10px; top: 50%; width: 180px; opacity: 0.05; transform: translateY(-50%) rotate(-90deg); pointer-events:none; z-index: 1;" alt="MCR Watermark">
+  <img id="spider-fixed" src="assets/images/araña.png" class="spider-crawl" style="width: 80px; opacity: 0.45; filter: drop-shadow(0 0 10px rgba(255,0,0,0.3));" alt="Crawling Spider">
+
+  <!-- ═══ INTRO CURTAIN ═══ -->
+  <div id="curtain">
+    <div id="curtain-cross"></div>
+    <div id="curtain-text">My Chemical Romance · Acto XXIV</div>
+    <button id="curtain-enter"><span>Entrar al Desfile</span></button>
+  </div>
+
+  <!-- ═══ PROGRESS LINE ═══ -->
+  <div id="progress-line"></div>
+
+  <!-- ═══ BLOOD DRIP ═══ -->
+  <svg id="blood-drip-layer" viewBox="0 0 1440 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="blood-gloss" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#4a0000" />
+        <stop offset="30%" stop-color="#800000" />
+        <stop offset="50%" stop-color="#b30010" />
+        <stop offset="70%" stop-color="#800000" />
+        <stop offset="100%" stop-color="#4a0000" />
+      </linearGradient>
+    </defs>
+    <!-- drips injected by JS -->
+  </svg>
+
+  <!-- ═══ RUNE RING ═══ -->
+  <div id="rune-ring">
+    <svg viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <g class="counter">
+        <circle cx="250" cy="250" r="240" stroke="#8a0014" stroke-width=".4" stroke-dasharray="3 8" />
+      </g>
+      <circle cx="250" cy="250" r="230" stroke="#8a0014" stroke-width=".3" stroke-dasharray="1 15" />
+      <text font-family="'Special Elite',monospace" font-size="11" fill="#8a0014" letter-spacing="6">
+        <textPath href="#rune-circle-path" startOffset="0%">
+          ✦ HELENA ✦ GHOST OF YOU ✦ FAMOUS LAST WORDS ✦ CANCER ✦ DEMOLITION LOVERS ✦ CEMETERY DRIVE ✦ DISENCHANTED ✦
+          MAMA ✦ SLEEP ✦ VENOM ✦
+        </textPath>
+      </text>
+      <defs>
+        <path id="rune-circle-path" d="M250,10 a240,240 0 1,1 -.01,0 z" />
+      </defs>
+    </svg>
+  </div>
+
+  <!-- ═══ MIST CANVAS ═══ -->
+  <canvas id="mist-canvas"></canvas>
+
+  <!-- Fixed UI -->
+  <div id="cr"></div>
+  <div id="cd"></div>
+  <div id="vignette"></div>
+  <div id="scanlines"></div>
+  <div id="grain"></div>
+  <canvas id="bg-canvas"></canvas>
+
+  <div class="whisper" style="left:16px">Helena · Cemetery Drive · Early Sunsets</div>
+  <div class="whisper" style="right:16px">Ghost of You · Famous Last Words · Cancer</div>
+
+  <div id="player">
+    <div class="p-waveform">
+      <div class="p-bar"></div>
+      <div class="p-bar"></div>
+      <div class="p-bar"></div>
+      <div class="p-bar"></div>
+      <div class="p-bar"></div>
+    </div>
+    <div class="p-dot"></div>
+    <img src="assets/images/discoMCR.gif"
+      style="width:24px; height:24px; border-radius:50%; opacity:.6; filter: contrast(1.4) grayscale(0.2);"
+      alt="Spinning Disc Decoration">
+    <div class="p-lbl" id="p-lbl">Side A — Demolition Lovers (2026 Remastered)</div>
+  </div>
+
+  <!-- ═══ MARQUEE BAND ═══ -->
+  <div id="marquee-band">
+    <div class="marquee-track" id="marquee-track">
+      <span>Demolition Lovers</span><span class="sep">✦</span>
+      <span>Helena</span><span class="sep">✦</span>
+      <span>The Ghost of You</span><span class="sep">✦</span>
+      <span>Famous Last Words</span><span class="sep">✦</span>
+      <span>I'm Not Okay</span><span class="sep">✦</span>
+      <span>Cancer</span><span class="sep">✦</span>
+      <span>Welcome to the Black Parade</span><span class="sep">✦</span>
+      <span>Cemetery Drive</span><span class="sep">✦</span>
+      <span>Early Sunsets Over Monroeville</span><span class="sep">✦</span>
+      <span>Disenchanted</span><span class="sep">✦</span>
+      <span>Demolition Lovers</span><span class="sep">✦</span>
+      <span>Helena</span><span class="sep">✦</span>
+      <span>The Ghost of You</span><span class="sep">✦</span>
+      <span>Famous Last Words</span><span class="sep">✦</span>
+      <span>I'm Not Okay</span><span class="sep">✦</span>
+      <span>Cancer</span><span class="sep">✦</span>
+      <span>Welcome to the Black Parade</span><span class="sep">✦</span>
+      <span>Cemetery Drive</span><span class="sep">✦</span>
+      <span>Early Sunsets Over Monroeville</span><span class="sep">✦</span>
+      <span>Disenchanted</span><span class="sep">✦</span>
+    </div>
+  </div>
+
+  <main>
+
+    <!-- ═══════════════════════════
+     HERO
+═══════════════════════════ -->
+    <section id="hero"
+      style="background-image: linear-gradient(to bottom, rgba(4,2,8,0.7), var(--ink)), url('assets/images/hero-bg.png');">
+      <div class="hero-bloom"></div>
+      <img src="assets/images/icons8-goth-48.png" class="goth-stamp tl" alt="Goth Icon">
+      <img src="assets/images/icons8-goth-48.png" class="goth-stamp tr" alt="Goth Icon">
+      <div id="sigil">
+        <svg viewBox="0 0 680 680" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="340" cy="340" r="326" stroke="#8a0014" stroke-width=".5" stroke-dasharray="5 9" />
+          <circle cx="340" cy="340" r="288" stroke="#8a0014" stroke-width=".3" stroke-dasharray="2 14" />
+          <circle cx="340" cy="340" r="240" stroke="#8a0014" stroke-width=".5" />
+          <g class="counter">
+            <circle cx="340" cy="340" r="188" stroke="#8a0014" stroke-width=".3" stroke-dasharray="3 7" />
+          </g>
+          <circle cx="340" cy="340" r="128" stroke="#8a0014" stroke-width=".4" />
+          <circle cx="340" cy="340" r="70" stroke="#8a0014" stroke-width=".3" stroke-dasharray="2 5" />
+          <line x1="340" y1="14" x2="340" y2="666" stroke="#8a0014" stroke-width=".3" opacity=".7" />
+          <line x1="14" y1="340" x2="666" y2="340" stroke="#8a0014" stroke-width=".3" opacity=".7" />
+          <line x1="78" y1="78" x2="602" y2="602" stroke="#8a0014" stroke-width=".2" opacity=".5" />
+          <line x1="602" y1="78" x2="78" y2="602" stroke="#8a0014" stroke-width=".2" opacity=".5" />
+          <polygon points="340,42 386,138 492,138 410,200 438,298 340,238 242,298 270,200 188,138 294,138"
+            stroke="#8a0014" stroke-width=".45" fill="none" />
+          <polygon points="340,638 386,542 492,542 410,480 438,382 340,442 242,382 270,480 188,542 294,542"
+            stroke="#8a0014" stroke-width=".3" fill="none" opacity=".4" />
+          <circle cx="340" cy="14" r="2" fill="#8a0014" opacity=".5" />
+          <circle cx="340" cy="666" r="2" fill="#8a0014" opacity=".5" />
+          <circle cx="14" cy="340" r="2" fill="#8a0014" opacity=".5" />
+          <circle cx="666" cy="340" r="2" fill="#8a0014" opacity=".5" />
+        </svg>
+      </div>
+
+      <p class="hero-eye fu">Dos Décadas de Oscuridad &nbsp;·&nbsp; Acto XXIV</p>
+
+      <div class="hero-block fu">
+        <div class="hc tl"></div>
+        <div class="hc tr"></div>
+        <div class="hc bl"></div>
+        <div class="hc br"></div>
+        <span class="hD" data-text="Demolition">Demolition</span>
+        <span class="hL">Lovers</span>
+      </div>
+
+      <div class="hero-sub fu"><span>MCR &nbsp;·&nbsp; 2002–2026</span></div>
+      <p class="hero-q fu">"Hand in mine, into your icy water..."</p>
+      <p class="hero-date fu"
+        style="font-family:var(--tm); font-size:10px; color:var(--red-bright); letter-spacing:8px; margin-top:2rem;">23
+        DE ABRIL — LA CITA FINAL</p>
+      <div class="hero-sc fu">
+        <div class="sc-bar"></div><span>Scroll</span>
+      </div>
+
+      <div class="section-num">XXIV</div>
+    </section>
+
+    <!-- ═══════════════════════════
+     MANIFESTO
+═══════════════════════════ -->
+    <section id="manifesto">
+      <div class="pattern-overlay"></div>
+      <img src="assets/images/demolition-lovers-art.png" class="deco-img"
+        style="opacity: 0.15; top: 10%; right: 5%; width: 500px; transform: rotate(5deg);" alt="Demolition Lovers Art">
+      <img src="assets/images/icons8-goth-50.png" class="goth-stamp bl" alt="Goth Icon">
+      <img src="assets/images/icons8-goth-50.png" class="goth-stamp br" alt="Goth Icon">
+      <div class="mf fu">
+        <div class="mf-XX">XXIV</div>
+        <div class="mf-tag">Aniversario &nbsp;·&nbsp; 2002 — 2026</div>
+        <div class="blood-splatter" style="top: -50px; left: 10%; opacity: 0.2;"></div>
+        <div class="blood-splatter" style="bottom: 10%; right: 5%; opacity: 0.15; transform: scale(1.5);"></div>
+        <h2 class="mf-h">La Distancia es<br><em>una Mentira Hermosa</em></h2>
+        <p class="mf-body" style="color:#eee">En este Acto XXIV celebramos que el tiempo no ha podido borrar lo que la
+          música escribió en nosotros. Hay canciones que no envejecen — se calcifican en la memoria como huesos negros,
+          como cartas que nunca se enviaron pero que ambos conocemos de memoria.</p>
+        <p class="mf-body" style="color:#eee">De Chile a México, el hilo rojo está empapado en gasolina y
+          listo para arder. Veinticuatro años de MCR nos han enseñado que lo que es para siempre, no importa cuánto se
+          aleje, siempre encuentra el camino de vuelta, especialmente un 23 de Abril.</p>
+        <div class="mf-rule"></div>
+        <p class="mf-meta">Para la dueña de este hermoso desastre — Aranxita</p>
+      </div>
+      <div class="section-num">II</div>
+    </section>
+
+    <!-- ═══════════════════════════
+     PORTRAIT
+═══════════════════════════ -->
+    <section id="portrait">
+      <div class="pg">
+        <div class="pl fu">
+          <div class="pl-bloom"></div>
+          <div class="pl-inner">
+            <svg viewBox="0 0 400 580" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <radialGradient id="bg-atm" cx="50%" cy="38%" r="55%">
+                  <stop offset="0%" stop-color="#1c0814" stop-opacity=".9" />
+                  <stop offset="100%" stop-color="#040208" stop-opacity="0" />
+                </radialGradient>
+                <radialGradient id="skin-tone" cx="50%" cy="45%" r="55%">
+                  <stop offset="0%" stop-color="#201018" />
+                  <stop offset="100%" stop-color="#130810" />
+                </radialGradient>
+                <linearGradient id="jacket-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#12091e" />
+                  <stop offset="100%" stop-color="#070410" />
+                </linearGradient>
+                <filter id="soft-blur">
+                  <feGaussianBlur stdDeviation="1.5" />
+                </filter>
+              </defs>
+              <rect width="400" height="580" fill="#040208" />
+              <rect width="400" height="580" fill="url(#bg-atm)" />
+              <path d="M120 580 L120 200 Q200 120 280 200 L280 580Z" fill="rgba(255,255,255,.008)"
+                stroke="rgba(168,0,26,.08)" stroke-width=".8" />
+              <path d="M122 260 C108 232 148 204 200 200 C252 204 292 232 278 260 L290 400 Q200 424 110 400Z"
+                fill="url(#jacket-grad)" />
+              <path d="M125 264 C112 238 150 208 200 204 C250 208 288 238 275 264 L287 397 Q200 420 113 397Z"
+                fill="#110820" opacity=".6" />
+              <path d="M172 210 L200 244 L228 210 L218 198 L200 214 L182 198Z" fill="#0d0618" />
+              <rect x="195" y="222" width="10" height="100" rx="2" fill="#09040f" />
+              <rect x="197.5" y="226" width="5" height="50" rx="1" fill="#1e0010" />
+              <path d="M172 210 L200 225 L228 210" stroke="#1a0e28" stroke-width="1.5" fill="none" />
+              <ellipse cx="200" cy="136" rx="44" ry="52" fill="url(#skin-tone)" />
+              <ellipse cx="200" cy="136" rx="41" ry="49" fill="#170c22" />
+              <path d="M156 116 Q162 72 200 67 Q238 72 244 116" fill="#030107" stroke="none" />
+              <path d="M156 114 Q148 132 150 158" fill="none" stroke="#030107" stroke-width="8"
+                stroke-linecap="round" />
+              <path d="M244 114 Q252 132 250 158" fill="none" stroke="#030107" stroke-width="8"
+                stroke-linecap="round" />
+              <path d="M156 112 Q144 148 148 180 Q153 162 160 145 Q165 132 164 118Z" fill="#020106" />
+              <path d="M160 110 Q150 145 154 172 Q158 155 164 138 Q168 124 168 114Z" fill="#030108" />
+              <path d="M160 110 Q175 100 200 98 Q225 100 240 110 Q222 118 200 115 Q178 118 160 110Z" fill="#030108" />
+              <ellipse cx="174" cy="148" rx="18" ry="10" fill="rgba(0,0,0,.18)" filter="url(#soft-blur)" />
+              <ellipse cx="226" cy="148" rx="18" ry="10" fill="rgba(0,0,0,.18)" filter="url(#soft-blur)" />
+              <ellipse cx="182" cy="128" rx="8" ry="6" fill="#06030c" />
+              <ellipse cx="218" cy="128" rx="8" ry="6" fill="#06030c" />
+              <ellipse cx="182" cy="128" rx="4.5" ry="4" fill="#7a0012" />
+              <ellipse cx="218" cy="128" rx="4.5" ry="4" fill="#7a0012" />
+              <circle cx="182" cy="128" r="2.5" fill="#020106" />
+              <circle cx="218" cy="128" r="2.5" fill="#020106" />
+              <circle cx="183.5" cy="126.5" r=".9" fill="rgba(255,255,255,.3)" />
+              <circle cx="219.5" cy="126.5" r=".9" fill="rgba(255,255,255,.3)" />
+              <path d="M173 126 Q182 123 191 126" stroke="#010106" stroke-width="2.5" fill="none"
+                stroke-linecap="round" />
+              <path d="M209 126 Q218 123 227 126" stroke="#010106" stroke-width="2.5" fill="none"
+                stroke-linecap="round" />
+              <path d="M174 131 Q182 133 190 131" stroke="#020107" stroke-width="1.2" fill="none" opacity=".7" />
+              <path d="M210 131 Q218 133 226 131" stroke="#020107" stroke-width="1.2" fill="none" opacity=".7" />
+              <path d="M196 138 Q200 145 204 138" stroke="rgba(216,205,181,.08)" stroke-width="1.2" fill="none" />
+              <path d="M186 154 Q192 150 200 152 Q208 150 214 154 Q209 162 200 164 Q191 162 186 154Z" fill="#44000e" />
+              <path d="M186 154 Q200 158 214 154" stroke="#6a0014" stroke-width=".6" fill="none" />
+              <path d="M192 152 Q196 149 200 150 Q204 149 208 152" stroke="rgba(100,0,20,.5)" stroke-width=".8"
+                fill="none" />
+              <!-- Left candle + animated flame -->
+              <rect x="52" y="358" width="9" height="100" rx="1.5" fill="#16101e" />
+              <rect x="53" y="358" width="7" height="98" rx="1" fill="#1e1628" opacity=".6" />
+              <ellipse cx="56.5" cy="358" rx="4.5" ry="1.8" fill="rgba(216,205,181,.5)" />
+              <g class="candle-flame-l">
+                <path d="M56.5 330 Q50 346 56.5 357 Q63 346 56.5 330Z" fill="#b00014" opacity=".9" />
+                <path d="M56.5 336 Q52 348 56.5 357 Q61 348 56.5 336Z" fill="#ff9a00" opacity=".65" />
+                <path d="M56.5 342 Q54.5 350 56.5 357 Q58.5 350 56.5 342Z" fill="#fff8e0" opacity=".35" />
+                <ellipse cx="56.5" cy="356" rx="8" ry="3.5" fill="rgba(255,130,0,.1)" filter="url(#soft-blur)" />
+              </g>
+              <!-- Right candle + animated flame -->
+              <rect x="339" y="378" width="9" height="85" rx="1.5" fill="#16101e" />
+              <ellipse cx="343.5" cy="378" rx="4.5" ry="1.8" fill="rgba(216,205,181,.5)" />
+              <g class="candle-flame-r">
+                <path d="M343.5 350 Q337 366 343.5 377 Q350 366 343.5 350Z" fill="#b00014" opacity=".9" />
+                <path d="M343.5 356 Q339 368 343.5 377 Q348 368 343.5 356Z" fill="#ff9a00" opacity=".65" />
+                <path d="M343.5 362 Q341.5 370 343.5 377 Q345.5 370 343.5 362Z" fill="#fff8e0" opacity=".35" />
+                <ellipse cx="343.5" cy="376" rx="8" ry="3.5" fill="rgba(255,130,0,.1)" filter="url(#soft-blur)" />
+              </g>
+              <g transform="translate(78,482)">
+                <ellipse cx="0" cy="-16" rx="18" ry="11" fill="#3a0008" transform="rotate(-40)" />
+                <ellipse cx="0" cy="-16" rx="18" ry="11" fill="#3a0008" transform="rotate(0)" />
+                <ellipse cx="0" cy="-16" rx="18" ry="11" fill="#3a0008" transform="rotate(40)" />
+                <ellipse cx="0" cy="-16" rx="18" ry="11" fill="#3a0008" transform="rotate(80)" />
+                <ellipse cx="0" cy="-16" rx="18" ry="11" fill="#3a0008" transform="rotate(120)" />
+                <ellipse cx="0" cy="-16" rx="18" ry="11" fill="#3a0008" transform="rotate(160)" />
+                <ellipse cx="0" cy="-10" rx="13" ry="8" fill="#56000e" transform="rotate(20)" />
+                <ellipse cx="0" cy="-10" rx="13" ry="8" fill="#56000e" transform="rotate(80)" />
+                <ellipse cx="0" cy="-10" rx="13" ry="8" fill="#56000e" transform="rotate(140)" />
+                <ellipse cx="0" cy="-5" rx="8" ry="5" fill="#780016" transform="rotate(0)" />
+                <ellipse cx="0" cy="-5" rx="8" ry="5" fill="#780016" transform="rotate(60)" />
+                <circle cx="0" cy="0" r="7" fill="#980020" />
+                <circle cx="0" cy="0" r="4" fill="#b00026" />
+                <circle cx="0" cy="0" r="1.8" fill="#c8002e" />
+                <line x1="0" y1="8" x2="-6" y2="56" stroke="#183214" stroke-width="2.8" />
+                <path d="M-3 30 Q-20 24 -25 13" stroke="#183214" stroke-width="1.5" fill="none" />
+                <ellipse cx="-26" cy="12" rx="7" ry="3.5" fill="#183214" transform="rotate(-28 -26 12)" />
+              </g>
+              <g transform="translate(318,492)">
+                <ellipse cx="0" cy="-14" rx="16" ry="10" fill="#3a0008" transform="rotate(-40)" />
+                <ellipse cx="0" cy="-14" rx="16" ry="10" fill="#3a0008" transform="rotate(0)" />
+                <ellipse cx="0" cy="-14" rx="16" ry="10" fill="#3a0008" transform="rotate(40)" />
+                <ellipse cx="0" cy="-14" rx="16" ry="10" fill="#3a0008" transform="rotate(80)" />
+                <ellipse cx="0" cy="-14" rx="16" ry="10" fill="#3a0008" transform="rotate(120)" />
+                <ellipse cx="0" cy="-8" rx="10" ry="6.5" fill="#56000e" transform="rotate(20)" />
+                <ellipse cx="0" cy="-8" rx="10" ry="6.5" fill="#56000e" transform="rotate(80)" />
+                <ellipse cx="0" cy="-8" rx="10" ry="6.5" fill="#56000e" transform="rotate(140)" />
+                <circle cx="0" cy="0" r="8" fill="#980020" />
+                <circle cx="0" cy="0" r="4.5" fill="#b00026" />
+                <circle cx="0" cy="0" r="2" fill="#c8002e" />
+                <line x1="0" y1="9" x2="8" y2="55" stroke="#183214" stroke-width="2.8" />
+                <path d="M4 32 Q20 26 24 14" stroke="#183214" stroke-width="1.5" fill="none" />
+              </g>
+              <g transform="translate(198,540) rotate(-18)">
+                <ellipse cx="0" cy="-12" rx="20" ry="12" fill="#2e0008" opacity=".82" transform="rotate(0)" />
+                <ellipse cx="0" cy="-12" rx="20" ry="12" fill="#2e0008" opacity=".82" transform="rotate(55)" />
+                <ellipse cx="0" cy="-12" rx="20" ry="12" fill="#2e0008" opacity=".82" transform="rotate(110)" />
+                <ellipse cx="0" cy="-6" rx="13" ry="8" fill="#4e000e" opacity=".82" />
+                <ellipse cx="0" cy="-6" rx="13" ry="8" fill="#4e000e" opacity=".82" transform="rotate(60)" />
+                <circle cx="0" cy="0" r="9" fill="#800020" opacity=".85" />
+                <circle cx="0" cy="0" r="5" fill="#9e0026" opacity=".85" />
+                <line x1="24" y1="0" x2="70" y2="14" stroke="#183214" stroke-width="2.8" />
+              </g>
+              <ellipse cx="140" cy="570" rx="2.8" ry="3.8" fill="#7a0000" opacity=".55" />
+              <ellipse cx="238" cy="573" rx="2" ry="2.8" fill="#7a0000" opacity=".45" />
+              <ellipse cx="112" cy="575" rx="1.4" ry="2" fill="#7a0000" opacity=".35" />
+              <ellipse cx="290" cy="568" rx="1.8" ry="2.4" fill="#7a0000" opacity=".38" />
+              <circle cx="66" cy="220" r=".9" fill="#b00014" opacity=".28" />
+              <circle cx="345" cy="190" r="1.1" fill="#b00014" opacity=".22" />
+              <circle cx="130" cy="420" r=".8" fill="#d6ccb4" opacity=".1" />
+              <circle cx="295" cy="395" r=".6" fill="#d6ccb4" opacity=".09" />
+              <circle cx="40" cy="475" r="1" fill="#b00014" opacity=".18" />
+              <circle cx="375" cy="445" r=".7" fill="#d6ccb4" opacity=".1" />
+              <circle cx="180" cy="300" r=".5" fill="#b00014" opacity=".15" />
+              <circle cx="228" cy="335" r=".6" fill="#d6ccb4" opacity=".08" />
+              <rect x="6" y="6" width="388" height="568" stroke="#8a0014" stroke-width=".55" fill="none"
+                opacity=".28" />
+              <rect x="15" y="15" width="370" height="550" stroke="#8a0014" stroke-width=".3" fill="none"
+                opacity=".13" />
+              <line x1="96" y1="30" x2="304" y2="30" stroke="#8a0014" stroke-width=".5" opacity=".38" />
+              <line x1="112" y1="22" x2="288" y2="22" stroke="#8a0014" stroke-width=".3" opacity=".22" />
+              <circle cx="200" cy="26" r="3.5" fill="none" stroke="#8a0014" stroke-width=".5" opacity=".4" />
+              <circle cx="200" cy="26" r="1.2" fill="#8a0014" opacity=".35" />
+              <circle cx="12" cy="290" r="1.5" fill="none" stroke="#8a0014" stroke-width=".5" opacity=".3" />
+              <circle cx="388" cy="290" r="1.5" fill="none" stroke="#8a0014" stroke-width=".5" opacity=".3" />
+            </svg>
+          </div>
+        </div>
+        <div class="pr fu">
+          <img src="assets/images/mcr.png" class="lovers-art"
+            style="position:absolute; top: -20px; right: 20px; opacity: 0.2; z-index: 0; width: 300px; filter: grayscale(0) contrast(1.2) brightness(1.1);"
+            alt="MCR Decor">
+          <img src="assets/images/icons8-cologne-cathedral-64.png" class="goth-stamp tr" style="opacity: 0.1;"
+            alt="Cathedral Icon">
+          <p class="pr-kick">Un retrato en cenizas</p>
+          <h3 class="pr-h">Sangre y Tinta<br><em>Tres Mil Millas</em></h3>
+          <p class="pr-p" style="color:#fff">El tiempo solo es cruel con los que no tienen canciones que los atraviesen.
+            Tú tienes todas las que importan. Cada riff de guitarra que te erizó la piel en 2004 o 2006 sigue ahí,
+            intacto dentro de ti, esperando ese momento en que el eco de Gerard Way se vuelve el único refugio posible.
+          </p>
+          <p class="pr-p" style="color:#fff">La distancia entre dos ciudades es física, pero la música es etérea. Cruza
+            mares, fronteras y años de silencio para recordarte que el 23 de Abril es, y será siempre, el día en que el
+            desfile se detiene solo para ti.</p>
+          <div class="pr-rule"></div>
+          <p class="pr-sig">— Para ti, Aranxita, en tu Acto XXIV</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════
+     TRACKS
+═══════════════════════════ -->
+    <svg class="blood-drip-divider" viewBox="0 0 1440 100" preserveAspectRatio="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,0 L1440,0 L1440,20 Q1200,80 1000,30 Q800,90 600,40 Q400,100 200,20 L0,40 Z" fill="#8a0114"
+        opacity=".6" />
+    </svg>
+    <section id="tracks">
+      <div class="pattern-overlay"></div>
+      <img src="assets/images/icons8-cologne-cathedral-64.png" class="deco-img skel-float"
+        style="width: 150px; bottom: 20px; right: 20px;" alt="Gothic Cathedral">
+      <div class="tracks-h fu">
+        <div class="orn" style="margin-bottom:2rem"><img src="assets/images/icons8-goth-48.png"
+            style="height: 24px; filter: invert(80%) sepia(20%) hue-rotate(310deg) saturate(3) opacity(0.7);"
+            alt="Goth Icon"></div>
+        <h2 class="tracks-title">Las Canciones que <em>Nos Hicieron</em></h2>
+      </div>
+      <div class="tgrid fu">
+        <div class="tc">
+          <div class="tc-n">01</div>
+          <div class="tc-name">Demolition Lovers</div>
+          <div class="tc-alb">I Brought You My Bullets</div>
+          <div class="tc-bar"></div>
+        </div>
+        <div class="tc">
+          <div class="tc-n">02</div>
+          <div class="tc-name">Helena</div>
+          <div class="tc-alb">Three Cheers for Sweet Revenge</div>
+          <div class="tc-bar"></div>
+        </div>
+        <div class="tc">
+          <div class="tc-n">03</div>
+          <div class="tc-name">The Ghost of You</div>
+          <div class="tc-alb">Three Cheers for Sweet Revenge</div>
+          <div class="tc-bar"></div>
+        </div>
+        <div class="tc">
+          <div class="tc-n">04</div>
+          <div class="tc-name">I'm Not Okay</div>
+          <div class="tc-alb">Three Cheers for Sweet Revenge</div>
+          <div class="tc-bar"></div>
+        </div>
+        <div class="tc">
+          <div class="tc-n">05</div>
+          <div class="tc-name">Famous Last Words</div>
+          <div class="tc-alb">The Black Parade</div>
+          <div class="tc-bar"></div>
+        </div>
+        <div class="tc">
+          <div class="tc-n">06</div>
+          <div class="tc-name">Welcome to the Black Parade</div>
+          <div class="tc-alb">The Black Parade</div>
+          <div class="tc-bar"></div>
+        </div>
+        <div class="tc">
+          <div class="tc-n">07</div>
+          <div class="tc-name">Cancer</div>
+          <div class="tc-alb">The Black Parade</div>
+          <div class="tc-bar"></div>
+        </div>
+        <div class="tc">
+          <div class="tc-n">08</div>
+          <div class="tc-name">Disenchanted</div>
+          <div class="tc-alb">The Black Parade</div>
+          <div class="tc-bar"></div>
+        </div>
+        <div class="tc">
+          <div class="tc-n">09</div>
+          <div class="tc-name">I Don't Love You</div>
+          <div class="tc-alb">The Black Parade</div>
+          <div class="tc-bar"></div>
+        </div>
+      </div>
+      <div class="section-num">IV</div>
+    </section>
+
+    <!-- ═══════════════════════════
+     POEM GENERATOR
+═══════════════════════════ -->
+    <section id="generator">
+      <img src="assets/images/icons8-goth-48-vr2.png" class="goth-stamp tl" alt="Goth Icon">
+      <img src="assets/images/icons8-goth-48-vr2.png" class="goth-stamp tr" alt="Goth Icon">
+      <div class="gen-h fu">
+        <div class="orn" style="margin-bottom:1.5rem"><img src="assets/images/icons8-goth-50.png"
+            style="height: 24px; filter: invert(80%) sepia(20%) hue-rotate(310deg) saturate(3) opacity(0.7);"
+            alt="Goth Icon"></div>
+        <p class="gen-eye">Oráculo Poético</p>
+        <h2 class="gen-title">El Réquiem de tu <em>Destino</em></h2>
+        <p class="gen-sub">Pulsa el panel para invocar un verso del abismo</p>
+      </div>
+      <div class="pstage fu" id="pstage">
+        <div class="b1"></div>
+        <div class="b2"></div>
+        <div class="b3"></div>
+        <div class="pstage-glow"></div>
+        <span class="pg-glyph tl">❧</span><span class="pg-glyph tr">❧</span>
+        <span class="pg-glyph bl">❦</span><span class="pg-glyph br">❦</span>
+        <p id="poem-text" style="word-wrap: break-word; overflow-wrap: break-word;">"Toca las cenizas"</p>
+        <p class="ps-cta">pulsa para invocar</p>
+      </div>
+      <div class="section-num">V</div>
+    </section>
+
+    <!-- ═══════════════════════════
+     ORACLE
+═══════════════════════════ -->
+    <section id="altar">
+      <div class="altar-inner">
+        <div class="orn fu"><img src="assets/images/icons8-goth-48-vr2.png"
+            style="height: 24px; filter: invert(80%) sepia(20%) hue-rotate(310deg) saturate(3) opacity(0.7);"
+            alt="Goth Icon"></div>
+        <h2 class="altar-h fu">Interroga al <em>Silencio</em></h2>
+        <p class="altar-sub fu">El corazón sabe lo que la mente teme preguntar. Pulsa la rosa para escuchar.</p>
+
+        <div class="rose-w fu" id="rose-el">
+          <div class="rose-halo"></div>
+          <div class="rose-orbit"></div>
+          <div class="rose-orbit2"></div>
+          <svg viewBox="0 0 170 170" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="roseglow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#b00026" stop-opacity=".15" />
+                <stop offset="100%" stop-color="#040208" stop-opacity="0" />
+              </radialGradient>
+            </defs>
+            <circle cx="85" cy="85" r="82" fill="url(#roseglow)" />
+            <circle cx="85" cy="85" r="80" stroke="rgba(168,0,26,.1)" stroke-width=".5" stroke-dasharray="4 7" />
+            <circle cx="85" cy="85" r="68" stroke="rgba(168,0,26,.06)" stroke-width=".4" />
+            <ellipse cx="85" cy="23" rx="14" ry="22" fill="#3a0008" />
+            <ellipse cx="85" cy="23" rx="14" ry="22" fill="#3a0008" transform="rotate(45 85 85)" />
+            <ellipse cx="85" cy="23" rx="14" ry="22" fill="#3a0008" transform="rotate(90 85 85)" />
+            <ellipse cx="85" cy="23" rx="14" ry="22" fill="#3a0008" transform="rotate(135 85 85)" />
+            <ellipse cx="85" cy="23" rx="14" ry="22" fill="#3a0008" transform="rotate(180 85 85)" />
+            <ellipse cx="85" cy="23" rx="14" ry="22" fill="#3a0008" transform="rotate(225 85 85)" />
+            <ellipse cx="85" cy="23" rx="14" ry="22" fill="#3a0008" transform="rotate(270 85 85)" />
+            <ellipse cx="85" cy="23" rx="14" ry="22" fill="#3a0008" transform="rotate(315 85 85)" />
+            <ellipse cx="85" cy="36" rx="11" ry="16" fill="#56000e" transform="rotate(22.5  85 85)" />
+            <ellipse cx="85" cy="36" rx="11" ry="16" fill="#56000e" transform="rotate(67.5  85 85)" />
+            <ellipse cx="85" cy="36" rx="11" ry="16" fill="#56000e" transform="rotate(112.5 85 85)" />
+            <ellipse cx="85" cy="36" rx="11" ry="16" fill="#56000e" transform="rotate(157.5 85 85)" />
+            <ellipse cx="85" cy="36" rx="11" ry="16" fill="#56000e" transform="rotate(202.5 85 85)" />
+            <ellipse cx="85" cy="36" rx="11" ry="16" fill="#56000e" transform="rotate(247.5 85 85)" />
+            <ellipse cx="85" cy="36" rx="11" ry="16" fill="#56000e" transform="rotate(292.5 85 85)" />
+            <ellipse cx="85" cy="36" rx="11" ry="16" fill="#56000e" transform="rotate(337.5 85 85)" />
+            <ellipse cx="85" cy="50" rx="8" ry="11" fill="#780016" transform="rotate(0   85 85)" />
+            <ellipse cx="85" cy="50" rx="8" ry="11" fill="#780016" transform="rotate(60  85 85)" />
+            <ellipse cx="85" cy="50" rx="8" ry="11" fill="#780016" transform="rotate(120 85 85)" />
+            <ellipse cx="85" cy="50" rx="8" ry="11" fill="#780016" transform="rotate(180 85 85)" />
+            <ellipse cx="85" cy="50" rx="8" ry="11" fill="#780016" transform="rotate(240 85 85)" />
+            <ellipse cx="85" cy="50" rx="8" ry="11" fill="#780016" transform="rotate(300 85 85)" />
+            <circle cx="85" cy="85" r="18" fill="#960022" />
+            <circle cx="85" cy="85" r="13" fill="#ae0028" />
+            <circle cx="85" cy="85" r="8" fill="#c2002e" />
+            <circle cx="85" cy="85" r="4" fill="#d40034" />
+            <circle cx="85" cy="85" r="1.5" fill="#e00038" />
+            <line x1="85" y1="140" x2="85" y2="167" stroke="#183214" stroke-width="3.5" />
+            <path d="M85 152 Q70 142 63 128" stroke="#183214" stroke-width="1.8" fill="none" />
+            <ellipse cx="61" cy="126" rx="8" ry="4.5" fill="#183214" transform="rotate(-32 61 126)" />
+            <path d="M85 158 Q96 148 100 136" stroke="#183214" stroke-width="1.5" fill="none" />
+          </svg>
+        </div>
+
+        <p id="oracle-r"></p>
+        <button id="oracle-btn"><span>Interrogar al Silencio</span></button>
+      </div>
+      <div class="section-num">VI</div>
+    </section>
+
+    <!-- ═══════════════════════════
+     CHRONICLES OF THE PAST
+ ═══════════════════════════ -->
+<section id="chronicles">
+  <div class="pattern-overlay"></div>
+  <div class="chron-grid fu">
+    <div class="chron-img-w">
+      <div class="blood-splatter" style="top:-10%; left:-10%; opacity:0.1; transform:scale(2.5)"></div>
+      <img src="assets/images/1.jpg" alt="Memory Chronicles" style="box-shadow: 0 0 30px rgba(0,0,0,0.8);">
+      <p style="font-family: var(--tm); font-size: 9px; margin-top: 1rem; color: var(--red-bright); letter-spacing: 2px;">FRAGMENTO DE ESTACIÓN: ARX-2026</p>
+    </div>
+    <div class="chron-content">
+      <img src="assets/images/mcr.png" style="width: 120px; opacity: 0.3; margin-bottom: 2rem; filter: brightness(1.2) contrast(1.1);" alt="MCR Icon">
+      <h2>Crónicas de una <em>Vampiresa Nocturna</em></h2>
+      <p style="color: #fff;">Aranxita, este no es solo un sitio web, es una cápsula de tiempo blindada contra el olvido. Los años 2002 a 2026 no son una cifra, son una colección de latidos que compartimos a través de cada track.</p>
+      <p style="color: #ccc;">Mientras el mundo cambia, My Chemical Romance permanece como esa cicatriz hermosa que elegimos lucir con orgullo. Aquí guardamos lo que somos mientras "The Ghost of You" suena de fondo.</p>
+      <div class="mf-rule"></div>
+      <p class="mf-meta" style="color: var(--red-bright);">— Memoria grabada satisfactoriamente —</p>
+    </div>
+  </div>
+  <div class="section-num">VII</div>
+</section>
+
+<!-- ═══════════════════════════
+     CVN LEGACY (Crónica de Vida Nocturna)
+ ═══════════════════════════ -->
+    <section id="cvn-legacy">
+      <div class="cvn-container fu">
+        <div class="cvn-info">
+          <div class="orn" style="margin-bottom:2rem; width: 100%;"><img src="assets/images/icons8-goth-48.png"
+              style="height: 24px; filter: invert(1); opacity: 0.5;" alt="Goth Icon"></div>
+          <h2>La Crónica de su <em>Vida Nocturna</em></h2>
+          <p style="color: #ccc;">Aranxita, esta sección es tu lienzo en la eternidad. Cada trazo que dejes aquí es una
+            promesa de que el 2026 será el año en que todas las sombras se convertirán en arte.</p>
+          <p style="color: #ccc;">MCR nos enseñó que somos "The Kids from Yesterday", pero hoy, 23 de abril, celebramos
+            que eres la protagonista de tu propia historia. Deja tu marca sobre el abismo.</p>
+          <div class="mf-rule"></div>
+          <p style="font-family: var(--tm); font-size: 10px; color: var(--red-bright);">EXPEDIENTE CVN-2026-ARX</p>
+        </div>
+        <div class="cvn-canvas-w" style="box-shadow: 0 0 50px rgba(255,0,0,0.15);">
+          <img src="assets/images/discoMCR.gif" style="position: absolute; top: 10px; right: 10px; width: 32px; height: 32px; border-radius: 50%; opacity: 0.3; z-index: 5;" alt="Disc Decor">
+          <div class="blood-splatter" style="top: -20%; left: -20%; opacity: 0.3;"></div>
+          <canvas id="cvn-canvas"></canvas>
+          <p style="color: #aa0000;">HAZ CLIC Y ARRASTRA PARA ESCRIBIR EN SANGRE</p>
+        </div>
+      </div>
+      <div class="section-num">CVN</div>
+    </section>
+
+    <svg class="blood-drip-divider" viewBox="0 0 1440 100" preserveAspectRatio="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,0 L1440,0 L1440,25 Q1150,110 950,35 Q750,120 550,45 Q350,105 150,20 L0,50 Z" fill="#b3001b"
+        opacity=".7" />
+    </svg>
+
+    <!-- ═══════════════════════════
+     FINALE
+ ═══════════════════════════ -->
+    <svg class="blood-drip-divider" viewBox="0 0 1440 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"
+      style="transform: rotate(180deg); margin-bottom: -1px;">
+      <path d="M0,0 L1440,0 L1440,30 Q1100,100 900,40 Q700,110 500,50 Q300,95 100,25 L0,45 Z" fill="#8a0114"
+        opacity=".4" />
+    </svg>
+    <section id="finale">
+      <div class="pattern-overlay"></div>
+      <img src="assets/images/black-parade-skeleton.png" class="deco-img skel-float"
+        style="opacity: 0.25; bottom: -50px; left: -50px; width: 400px; filter: contrast(1.2) brightness(1.2);"
+        alt="Black Parade Skeleton">
+      <img src="assets/images/icons8-goth-48.png" class="goth-stamp tl" alt="Goth Icon">
+      <img src="assets/images/icons8-goth-48.png" class="goth-stamp tr" alt="Goth Icon">
+      <div id="finale-bg">
+        <div class="aurora"></div>
+        <svg width="100%" height="100%" viewBox="0 0 1200 900" preserveAspectRatio="xMidYMid slice"
+          xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="rfg" cx="50%" cy="50%" r="55%">
+              <stop offset="0%" stop-color="#8a0016" stop-opacity=".3" />
+              <stop offset="100%" stop-color="#040208" stop-opacity="0" />
+            </radialGradient>
+          </defs>
+          <rect width="1200" height="900" fill="url(#rfg)" />
+          <line x1="0" y1="0" x2="1200" y2="900" stroke="#8a0014" stroke-width=".4" opacity=".1" />
+          <line x1="1200" y1="0" x2="0" y2="900" stroke="#8a0014" stroke-width=".4" opacity=".1" />
+        </svg>
+      </div>
+
+      <div id="star-field"></div>
+
+      <p class="fn-eye fu">Tres Mil Millas no son Nada</p>
+      <div class="fn-div fu">
+        <div class="fn-icon">✦</div>
+      </div>
+      <h2 class="fn-title fu">Veinticuatro años de existir<em>Feliz Cumpleaños, Aranxita</em></h2>
+      <div class="fn-date fu"
+        style="font-family:var(--tm); font-size:12px; color:var(--red-bright); letter-spacing:10px; margin: 1.5rem 0;">
+        23 DE ABRIL — 2026</div>
+      <p class="fn-body fu" style="color:#eee">El tiempo es solo una ilusión que comparten los que no tienen canciones
+        que los atraviesen. Tú las tienes todas. Que el Acto XXIV sea tan oscuro, tan bello y tan tuyo como cada nota de
+        este álbum — y que dure otros cien más hasta que el desfile sea lo único que quede de nosotros.</p>
+      <div class="fn-div fu">
+        <div class="fn-icon">♥</div>
+      </div>
+      <p class="fn-from fu">Con amor eterno desde el otro lado del mapa</p>
+      <div class="section-num">FIN</div>
+    </section>
+
+  </main>
+  <footer>
+    <p class="ft">Vampires Will Never Hurt You &nbsp;·&nbsp; MCR XXIV &nbsp;·&nbsp; 2026</p>
+    <span class="fh">♥</span>
+  </footer>
+
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    /* ══════════════════════════════════════════════════════
+       ░░ ORIGINAL CODE (untouched) ░░
+    ══════════════════════════════════════════════════════ */
+    const CR = document.getElementById('cr');
+    const CD = document.getElementById('cd');
+    let mx = 0, my = 0;
+
+    window.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      gsap.to(CD, { x: mx, y: my, duration: .05 });
+      gsap.to(CR, { x: mx, y: my, duration: .3, ease: 'power2.out' });
+    });
+
+    document.querySelectorAll('button, .tc, .pstage, .rose-w, a').forEach(el => {
+      el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+      el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+    });
+
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+    let W, H;
+    const resize = () => { W = canvas.width = innerWidth; H = canvas.height = innerHeight; };
+    window.addEventListener('resize', resize); resize();
+
+    class Ash {
+      constructor() { this.born(true); }
+      born(scatter) {
+        this.x = Math.random() * W;
+        this.y = scatter ? Math.random() * H : H + 10;
+        this.vx = (Math.random() - .5) * .14;
+        this.vy = -(Math.random() * .28 + .07);
+        this.r = Math.random() * 1.3 + .2;
+        this.a = Math.random() * .13 + .02;
+        this.w = Math.random() * Math.PI * 2;
+        this.ws = .003 + Math.random() * .005;
+        this.red = Math.random() > .68;
+        this.life = 0;
+        this.maxLife = 600 + Math.random() * 400;
+      }
+      tick() {
+        this.w += this.ws;
+        this.x += this.vx + Math.sin(this.w) * .18;
+        this.y += this.vy;
+        this.life++;
+        if (this.y < -12 || this.life > this.maxLife) this.born(false);
+      }
+      draw() {
+        ctx.save();
+        const fade = Math.min(1, this.life / 60) * Math.min(1, (this.maxLife - this.life) / 60);
+        ctx.globalAlpha = this.a * fade;
+        ctx.fillStyle = this.red ? '#a8001a' : '#d8cdb5';
+        ctx.beginPath();
+        ctx.arc(Math.round(this.x), Math.round(this.y), this.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+    const ashes = Array.from({ length: 20 }, () => new Ash());
+    (function loop() {
+      ctx.clearRect(0, 0, W, H);
+      ashes.forEach(a => { a.tick(); a.draw(); });
+      requestAnimationFrame(loop);
+    })();
+
+    const lyrics = [
+      'So long and goodnight', "I'm not okay", 'Carry on', 'Famous last words',
+      'To the end', 'Helena', 'Ghost of you', 'Cemetery drive', 'Early sunsets',
+      'Vampires will never hurt you', 'Dead!', 'Cancer', 'Mama', 'Disenchanted',
+      "I don't love you", 'The sharpest lives', 'Sleep', 'Thank you for the venom'
+    ];
+    let lastG = 0;
+    window.addEventListener('mousemove', e => {
+      const now = Date.now();
+      if (now - lastG < 1500) return;
+      lastG = now;
+      const el = document.createElement('div');
+      el.className = 'ghost';
+      el.textContent = lyrics[Math.floor(Math.random() * lyrics.length)];
+      el.style.cssText = `left:${e.clientX}px;top:${e.clientY - 20}px`;
+      document.body.appendChild(el);
+      gsap.fromTo(el,
+        { opacity: 0, y: 0 },
+        { opacity: .45, y: -90, duration: 4.5, ease: 'power1.out', onComplete: () => el.remove() }
+      );
+    });
+
+    gsap.to('.whisper', {
+      y: -200, ease: 'none',
+      scrollTrigger: { trigger: 'body', start: 'top top', end: 'bottom bottom', scrub: 5 }
+    });
+
+    const heroSeq = ['.hero-eye', '.hero-block', '.hero-sub', '.hero-q', '.hero-sc'];
+    heroSeq.forEach((sel, i) => {
+      const el = document.querySelector(sel);
+      if (!el) return;
+      gsap.fromTo(el,
+        { opacity: 0, y: 55 },
+        { opacity: 1, y: 0, duration: 1.9, delay: .5 + i * .38, ease: 'power4.out' }
+      );
+    });
+
+    gsap.utils.toArray('.fu').forEach(el => {
+      if (el.closest('#hero')) return;
+      gsap.fromTo(el, { opacity: 0, y: 42 }, {
+        opacity: 1, y: 0, duration: 1.5, ease: 'power3.out',
+        scrollTrigger: { trigger: el, start: 'top 87%', toggleActions: 'play none none none' }
+      });
+    });
+
+    const heroSection = document.getElementById('hero');
+    const sigilSvg = document.querySelector('#sigil svg');
+    if (heroSection && sigilSvg) {
+      heroSection.addEventListener('mousemove', e => {
+        const r = heroSection.getBoundingClientRect();
+        const cx = (e.clientX - r.left - r.width / 2) / r.width;
+        sigilSvg.style.animationDuration = Math.max(12, 80 - Math.abs(cx) * 130) + 's';
+      });
+      heroSection.addEventListener('mouseleave', () => { sigilSvg.style.animationDuration = '80s'; });
+    }
+
+    ScrollTrigger.create({
+      trigger: '#tracks', start: 'top 80%',
+      onEnter: () => {
+        gsap.fromTo('.tc', { opacity: 0, y: 25 },
+          { opacity: 1, y: 0, duration: .9, stagger: .08, ease: 'power3.out', delay: .3 });
+      }
+    });
+
+    const subjects = ['Tu alma', 'Este desfile', 'La última canción', 'El frío de Chile', 'Las luces de México', 'Nuestra herida', 'El vacío', 'Tu sombra', 'Este silencio', 'La distancia', 'Tu nombre escrito en humo'];
+    const verbs = ['se quema bajo', 'grita en', 'baila con', 'muere ante', 'se ahoga en', 'renace entre', 'se pierde en', 'florece sobre', 'sangra por', 'desaparece entre'];
+    const objects = ['rosas muertas', 'viejas cintas de cassette', 'la lluvia negra', 'promesas rotas', 'el eco de 2004', 'sangre y miel', 'los ojos del abismo', 'cenizas dulces', 'tu voz a las tres', 'cartas sin enviar'];
+    const pstage = document.getElementById('pstage');
+    const poemText = document.getElementById('poem-text');
+
+    pstage.addEventListener('click', () => {
+      const s = subjects[Math.floor(Math.random() * subjects.length)];
+      const v = verbs[Math.floor(Math.random() * verbs.length)];
+      const o = objects[Math.floor(Math.random() * objects.length)];
+      gsap.to(poemText, {
+        opacity: 0, y: -14, duration: .28,
+        onComplete: () => {
+          const verse = `"${s} ${v} ${o}"`;
+          revealChars(poemText, verse);
+        }
+      });
+      gsap.to('body', { backgroundColor: '#0e0210', duration: .07, yoyo: true, repeat: 1 });
+      gsap.to('.pstage .b1', { borderColor: 'rgba(223,0,32,.8)', duration: .1, yoyo: true, repeat: 2 });
+    });
+
+    const oLines = ['El dolor es tu corona', 'El desfile nunca termina', 'No estás sola en esto', 'Tu voz es el antídoto', 'Mantente peligrosa', 'La venganza es dulce', 'Eres la última de tu especie', 'La oscuridad te pertenece', 'Carry on — siempre', 'El mundo no mereció esta canción', 'So long and goodnight, mi amor'];
+    const roseEl = document.getElementById('rose-el');
+    const oResp = document.getElementById('oracle-r');
+    const oBtn = document.getElementById('oracle-btn');
+    let oAnimating = false;
+
+    function invokeOracle() {
+      if (oAnimating) return;
+      oAnimating = true;
+      oResp.classList.remove('show');
+      gsap.to(roseEl, { rotation: '+=18', duration: .15, yoyo: true, repeat: 5, ease: 'power2.inOut', onComplete: () => { oAnimating = false; } });
+      gsap.to('.rose-halo', { opacity: 1, duration: .3, yoyo: true, repeat: 2 });
+      setTimeout(() => {
+        oResp.textContent = oLines[Math.floor(Math.random() * oLines.length)];
+        oResp.classList.add('show');
+        gsap.fromTo(oResp, { y: 18, letterSpacing: '12px', opacity: 0 }, { y: 0, letterSpacing: '6px', opacity: 1, duration: 1.2, ease: 'power4.out' });
+      }, 700);
+    }
+    oBtn.addEventListener('click', invokeOracle);
+    roseEl.addEventListener('click', invokeOracle);
+
+    const tracks = ['Side A — Demolition Lovers', 'Side B — Helena', 'Side C — The Ghost of You', 'Side D — Famous Last Words', 'Side E — Cancer', "Side F — I'm Not Okay"];
+    let ti = 0;
+    const pLbl = document.getElementById('p-lbl');
+    setInterval(() => {
+      ti = (ti + 1) % tracks.length;
+      gsap.to(pLbl, {
+        opacity: 0, y: -5, duration: .3, onComplete: () => {
+          pLbl.textContent = tracks[ti];
+          gsap.to(pLbl, { opacity: 1, y: 0, duration: .45 });
+        }
+      });
+    }, 5000);
+
+    window.addEventListener('scroll', () => {
+      const prog = window.scrollY / (document.body.scrollHeight - innerHeight);
+      document.documentElement.style.setProperty('--scroll-tint', `rgba(168,0,26,${prog * .04})`);
+    });
+
+    /* ══════════════════════════════════════════════════════
+       ░░ NEW GOTHIC ANIMATION LAYER ░░
+    ══════════════════════════════════════════════════════ */
+
+    /* ── 1. INTRO CURTAIN ─────────────────────── */
+    const curtain = document.getElementById('curtain');
+    const curtainBtn = document.getElementById('curtain-enter');
+
+    curtainBtn.addEventListener('click', () => {
+      gsap.to(curtain, {
+        clipPath: 'inset(0 0 100% 0)',
+        duration: 1.4,
+        ease: 'power4.inOut',
+        onComplete: () => {
+          curtain.style.display = 'none';
+          document.body.classList.add('site-active');
+          // start heartbeat after curtain lifts
+          setTimeout(() => {
+            document.querySelector('.hL').classList.add('beating');
+          }, 800);
+        }
+      });
+      // Flash the whole screen red momentarily
+      const flash = document.createElement('div');
+      flash.style.cssText = 'position:fixed;inset:0;background:rgba(168,0,26,.15);z-index:8999;pointer-events:none';
+      document.body.appendChild(flash);
+      gsap.to(flash, { opacity: 0, duration: .8, onComplete: () => flash.remove() });
+    });
+
+    /* ── 2. SCROLL PROGRESS LINE ──────────────── */
+    const progressLine = document.getElementById('progress-line');
+    window.addEventListener('scroll', () => {
+      const prog = (window.scrollY / (document.body.scrollHeight - innerHeight));
+      const progLine = document.getElementById('progress-line');
+      if (progLine) progLine.style.width = (prog * 100) + '%';
+    });
+
+    /* ── CVN CANVAS LOGIC ─────────────────────── */
+    const cvnCanvas = document.getElementById('cvn-canvas');
+    if (cvnCanvas) {
+      const cctx = cvnCanvas.getContext('2d');
+      let drawing = false;
+
+      const resizeCvn = () => {
+        const parent = cvnCanvas.parentElement;
+        cvnCanvas.width = parent.clientWidth;
+        cvnCanvas.height = parent.clientHeight;
+        cctx.strokeStyle = '#ff0028';
+        cctx.lineWidth = 1.5;
+        cctx.lineJoin = 'round';
+        cctx.lineCap = 'round';
+        cctx.shadowBlur = 10;
+        cctx.shadowColor = '#ff0028';
+      };
+      window.addEventListener('resize', resizeCvn);
+      resizeCvn();
+
+      const startPosition = (e) => {
+        drawing = true;
+        draw(e);
+      };
+      const finishedPosition = () => {
+        drawing = false;
+        cctx.beginPath();
+      };
+      const draw = (e) => {
+        if (!drawing) return;
+        const rect = cvnCanvas.getBoundingClientRect();
+        const x = (e.clientX || e.touches[0].clientX) - rect.left;
+        const y = (e.clientY || e.touches[0].clientY) - rect.top;
+
+        cctx.lineTo(x, y);
+        cctx.stroke();
+        cctx.beginPath();
+        cctx.moveTo(x, y);
+      };
+
+      cvnCanvas.addEventListener('mousedown', startPosition);
+      cvnCanvas.addEventListener('mouseup', finishedPosition);
+      cvnCanvas.addEventListener('mousemove', draw);
+      cvnCanvas.addEventListener('touchstart', startPosition);
+      cvnCanvas.addEventListener('touchend', finishedPosition);
+      cvnCanvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e); }, { passive: false });
+    }
+
+    /* ── 3. BLOOD DRIP SVG ────────────────────── */
+    (function buildDrips() {
+      const svg = document.getElementById('blood-drip-layer');
+      const count = 28;
+      for (let i = 0; i < count; i++) {
+        const x = (i / count) * 1440 + Math.random() * 40;
+        const h = 30 + Math.random() * 70;
+        const w = 3 + Math.random() * 8;
+        const del = Math.random() * 12;
+        const dur = 5 + Math.random() * 8;
+        // Blood Drip Realism: Darker red + glossy highlight
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        const capR = w * .8;
+        path.setAttribute('d', `M${x},0 L${x - w / 2},${h - capR * 1.5} Q${x},${h + 4} ${x + w / 2},${h - capR * 1.5} Z`);
+        path.setAttribute('fill', 'url(#blood-gloss)');
+        path.setAttribute('opacity', '0');
+        path.style.cssText = `transform-origin:${x}px 0px; will-change: transform, opacity;`;
+        svg.appendChild(path);
+        // Animate with CSS via GSAP
+        gsap.set(path, { scaleY: 0, opacity: 0 });
+        gsap.to(path, {
+          scaleY: 1, opacity: .75 + Math.random() * .25,
+          duration: dur, delay: del, ease: 'power1.in',
+          repeat: -1, repeatDelay: 3 + Math.random() * 10,
+          onRepeat: function () {
+            path.setAttribute('d', `M${x},0 L${x - w / 2},${h - capR * 1.5 - Math.random() * 10} Q${x},${h + 4 + Math.random() * 8} ${x + w / 2},${h - capR * 1.5 - Math.random() * 8} Z`);
+          }
+        });
+      }
+    })();
+
+    /* ── 4. MIST CANVAS ───────────────────────── */
+    (function initMist() {
+      const mc = document.getElementById('mist-canvas');
+      const mctx = mc.getContext('2d');
+      let mW, mH;
+      const mResize = () => { mW = mc.width = innerWidth; mH = mc.height = innerHeight; };
+      window.addEventListener('resize', mResize); mResize();
+
+      class MistBlob {
+        constructor() { this.reset(); }
+        reset() {
+          this.x = Math.random() * mW;
+          this.y = mH * .6 + Math.random() * mH * .5;
+          this.r = 80 + Math.random() * 180;
+          this.vx = (Math.random() - .5) * .08;
+          this.vy = -.02 - Math.random() * .04;
+          this.a = 0;
+          this.maxA = .018 + Math.random() * .014;
+          this.life = 0;
+          this.maxL = 400 + Math.random() * 600;
+        }
+        tick() {
+          this.life++;
+          this.x += this.vx;
+          this.y += this.vy;
+          this.r += .08;
+          const t = this.life / this.maxL;
+          this.a = this.maxA * Math.sin(t * Math.PI);
+          if (this.life >= this.maxL) this.reset();
+        }
+        draw() {
+          const g = mctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.r);
+          g.addColorStop(0, `rgba(168,0,26,${this.a})`);
+          g.addColorStop(1, 'rgba(168,0,26,0)');
+          mctx.save();
+          mctx.globalAlpha = 1;
+          mctx.fillStyle = g;
+          mctx.beginPath();
+          mctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+          mctx.fill();
+          mctx.restore();
+        }
+      }
+
+      const blobs = Array.from({ length: 8 }, () => new MistBlob());
+      (function mistLoop() {
+        mctx.clearRect(0, 0, mW, mH);
+        blobs.forEach(b => { b.tick(); b.draw(); });
+        requestAnimationFrame(mistLoop);
+      })();
+    })();
+
+    /* ── 5. CURSOR BLOOD TRAIL ────────────────── */
+    let lastBlood = 0;
+    window.addEventListener('mousemove', e => {
+      const now = Date.now();
+      if (now - lastBlood < 80) return;
+      lastBlood = now;
+      const d = document.createElement('div');
+      d.className = 'cursor-blood';
+      d.style.cssText = `left:${e.clientX}px;top:${e.clientY}px`;
+      document.body.appendChild(d);
+      setTimeout(() => d.remove(), 900);
+    });
+
+    /* ── 6. CHAR-BY-CHAR poem reveal ─────────── */
+    function revealChars(el, text) {
+      el.textContent = '';
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0)';
+      [...text].forEach((ch, i) => {
+        const span = document.createElement('span');
+        span.className = 'char';
+        span.textContent = ch === ' ' ? '\u00a0' : ch;
+        span.style.animationDelay = (i * 35) + 'ms';
+        el.appendChild(span);
+      });
+    }
+
+    /* ── 7. MANIFESTO title hover shimmer ─────── */
+    (function shimmerTitle() {
+      const h = document.querySelector('.mf-h');
+      if (!h) return;
+      function wrapNodes(el) {
+        Array.from(el.childNodes).forEach(node => {
+          if (node.nodeType === 3) {
+            const text = node.textContent;
+            const frag = document.createDocumentFragment();
+            for (let char of text) {
+              const span = document.createElement('span');
+              span.className = 'shimmer-char';
+              span.textContent = char;
+              frag.appendChild(span);
+            }
+            node.replaceWith(frag);
+          } else if (node.nodeType === 1) {
+            wrapNodes(node);
+          }
+        });
+      }
+      wrapNodes(h);
+    })();
+
+    /* ── 8. TRACK CARD RIPPLE on click ─────────── */
+    document.querySelectorAll('.tc').forEach(card => {
+      card.addEventListener('click', e => {
+        const r = card.getBoundingClientRect();
+        const ripple = document.createElement('div');
+        ripple.className = 'tc-ripple';
+        const size = Math.max(r.width, r.height);
+        ripple.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX - r.left - size / 2}px;top:${e.clientY - r.top - size / 2}px`;
+        card.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 900);
+      });
+    });
+
+    /* ── 9. STAR FIELD in finale ─────────────── */
+    (function buildStars() {
+      const sf = document.getElementById('star-field');
+      if (!sf) return;
+      for (let i = 0; i < 50; i++) {
+        const s = document.createElement('div');
+        s.className = 'star-twinkle';
+        const size = .8 + Math.random() * 1.5;
+        s.style.cssText = `
+      width:${size}px;height:${size}px;
+      left:${Math.random() * 100}%;top:${Math.random() * 100}%;
+      --dur:${2 + Math.random() * 5}s;
+      --del:${Math.random() * 6}s;
+      --max-op:${.08 + Math.random() * .18};
+    `;
+        sf.appendChild(s);
+      }
+    })();
+
+    /* ── 10. PARALLAX sections on scroll ─────── */
+    gsap.to('.hero-bloom', {
+      y: -80,
+      ease: 'none',
+      scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 2 }
+    });
+
+    gsap.to('#sigil svg', {
+      y: -120, scale: .9,
+      ease: 'none',
+      scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 3 }
+    });
+
+    /* ── 11. MANIFESTO XX watermark float ─────── */
+    gsap.to('.mf-XX', {
+      y: -40,
+      ease: 'none',
+      scrollTrigger: { trigger: '#manifesto', start: 'top bottom', end: 'bottom top', scrub: 2 }
+    });
+
+    /* ── 12. PORTRAIT SVG parallax ─────────────── */
+    gsap.to('.pl-inner svg', {
+      y: -30,
+      ease: 'none',
+      scrollTrigger: { trigger: '#portrait', start: 'top bottom', end: 'bottom top', scrub: 2 }
+    });
+
+    /* ── 13. TYPEWRITER on hero eyebrow ──────────── */
+    (function typewriterEye() {
+      const eye = document.querySelector('.hero-eye');
+      if (!eye) return;
+      const full = eye.textContent.trim();
+      eye.textContent = '';
+      eye.classList.add('typing');
+      let i = 0;
+      // wait for reveal animation
+      setTimeout(() => {
+        const iv = setInterval(() => {
+          eye.textContent = full.slice(0, i++);
+          if (i > full.length) {
+            clearInterval(iv);
+            eye.classList.remove('typing');
+          }
+        }, 40);
+      }, 600);
+    })();
+
+    /* ── 14. SECTION NUM fade-in on scroll ───────── */
+    document.querySelectorAll('.section-num').forEach(el => {
+      gsap.fromTo(el, { opacity: 0 }, {
+        opacity: 1, duration: 2, ease: 'power2.out',
+        scrollTrigger: { trigger: el.parentElement, start: 'top 60%' }
+      });
+    });
+
+    /* ── 15. PR-SIG typewriter reveal ────────────── */
+    ScrollTrigger.create({
+      trigger: '.pr-sig', start: 'top 80%',
+      onEnter: () => {
+        const sig = document.querySelector('.pr-sig');
+        if (!sig || sig._typed) return;
+        sig._typed = true;
+        const full = sig.textContent;
+        sig.textContent = '';
+        sig.style.borderRight = '1px solid rgba(168,0,26,.5)';
+        let i = 0;
+        const iv = setInterval(() => {
+          sig.textContent = full.slice(0, i++);
+          if (i > full.length) {
+            clearInterval(iv);
+            setTimeout(() => sig.style.borderRight = '1px solid transparent', 800);
+          }
+        }, 45);
+      }
+    });
+
+    /* ── 16. ORACLE RESPONSE auto-clear ──────────── */
+    // After 8 seconds of showing, fade out to invite next click
+    let clearOracleTimer;
+    function scheduleOracleClear() {
+      clearTimeout(clearOracleTimer);
+      clearOracleTimer = setTimeout(() => {
+        gsap.to(oResp, {
+          opacity: 0, y: 10, duration: 1.5, ease: 'power2.in',
+          onComplete: () => { oResp.classList.remove('show'); oResp.style.opacity = ''; oResp.style.transform = ''; }
+        });
+      }, 8000);
+    }
+    const origInvoke = invokeOracle;
+    roseEl.removeEventListener('click', invokeOracle);
+    oBtn.removeEventListener('click', invokeOracle);
+    function invokeOracleWrapped() { origInvoke(); scheduleOracleClear(); }
+    roseEl.addEventListener('click', invokeOracleWrapped);
+    oBtn.addEventListener('click', invokeOracleWrapped);
+
+    /* ── 17. TRACKS section title char shimmer ───── */
+    ScrollTrigger.create({
+      trigger: '#tracks', start: 'top 75%',
+      onEnter: () => {
+        gsap.fromTo('.tracks-title', { letterSpacing: '-.05em', opacity: .3 },
+          { letterSpacing: '0em', opacity: 1, duration: 1.2, ease: 'power3.out' });
+      }
+    });
+
+    /* ── 18. FINALE aurora colour cycle ─────────── */
+    gsap.to('.aurora', {
+      background: 'radial-gradient(ellipse at 50% 100%,rgba(135,0,26,.22) 0%,rgba(90,0,18,.07) 40%,transparent 70%)',
+      duration: 5, repeat: -1, yoyo: true, ease: 'sine.inOut'
+    });
+
+    /* ── 19. PLAYER GLOW PULSE on track change ───── */
+    const playerEl = document.getElementById('player');
+    function pulsePlayer() {
+      gsap.to(playerEl, {
+        boxShadow: '0 0 20px rgba(168,0,26,.4)', duration: .3,
+        yoyo: true, repeat: 3, ease: 'power2.inOut'
+      });
+    }
+    setInterval(pulsePlayer, 5000);
+
+    /* ── 20. POEM STAGE mouse-track glow ─────────── */
+    pstage.addEventListener('mousemove', e => {
+      const r = pstage.getBoundingClientRect();
+      const px = ((e.clientX - r.left) / r.width) * 100;
+      const py = ((e.clientY - r.top) / r.height) * 100;
+      pstage.querySelector('.pstage-glow').style.background =
+        `radial-gradient(ellipse at ${px}% ${py}%,rgba(168,0,26,.12) 0%,transparent 65%)`;
+    });
+
+    console.log('%c✦ Demolition Lovers — Acto XX ✦', 'color:#df0020;font-family:serif;font-size:16px;font-style:italic');
+  </script>
+</body>
+
+</html>
